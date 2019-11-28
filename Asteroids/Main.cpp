@@ -8,10 +8,10 @@
 
 
 
+sf::RenderWindow window(sf::VideoMode(1366, 768), "Asteroids");
+
+
 int main() {
-	sf::RenderWindow window(sf::VideoMode(1366, 768), "SFML works!");
-	sf::CircleShape shape(100.f);
-	shape.setFillColor(sf::Color::Green);
 	while (window.isOpen()) {
 		sf::Event event;
 		while (window.pollEvent(event)) {
@@ -19,8 +19,7 @@ int main() {
 				window.close();
 		}
 		window.clear();
-		window.draw(shape);
 		window.display();
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }
