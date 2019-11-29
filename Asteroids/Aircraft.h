@@ -2,20 +2,29 @@
 #include <SFML/Graphics.hpp>
 class Aircraft : public sf::Sprite {
 private:
-	sf::Vector2f size;
+	float radius;
 
 	float headingAngle;
+
 	float speed;
+	
+	float rotateSpeed;
+
+	void UpdateSpriteSize();
 
 public:
 	Aircraft();
 	~Aircraft();
-	void SetSize(sf::Vector2f size);
-	void SetSize(float x, float y);
-	sf::Vector2f GetSize();
-
-	void SetDirection(float angle);
-	sf::Vector2f GetDirection();
-
+	void SetRadius(float radius);
+	float GetRadius();
+	void SetSpeed(float speed);
+	float GetSpeed();
+	void SetRotateSpeed(float angle);
+	float GetRotateSpeed();
+	void SetTexture(sf::Texture& texture);
+	void SetDirection(float angle); 
+	float GetDirection();
 	void Move(float dt);
+	void RotateLeft(float dt);
+	void RotateRight(float dt);
 };

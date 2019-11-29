@@ -1,29 +1,81 @@
 #include "Aircraft.h"
 
-Aircraft::Aircraft() {}
+void Aircraft::UpdateSpriteSize() {
+	if (getTexture() == NULL) { return; }
+	sf::Vector2u texSize = getTexture()->getSize();
+	setOrigin(texSize.x / 2, texSize.y / 2);
+	sf::Vector2f scale(radius / texSize.x, radius / texSize.y);
+	setScale(scale);
+}
+
+Aircraft::Aircraft() {
+	radius = 1;
+	headingAngle = 0;
+	speed = 0;
+	rotateSpeed = 0;
+	setPosition(1, 1);
+}
 
 Aircraft::~Aircraft() {}
 
-void Aircraft::SetSize(sf::Vector2f size) {
-	this->size = size;
+void Aircraft::SetRadius(float radius) {
+	this->radius = radius;
+	UpdateSpriteSize();
 }
 
-void Aircraft::SetSize(float x, float y) {
-	size = sf::Vector2f(x, y);
+
+float Aircraft::GetRadius() {
+	return radius;
 }
 
-sf::Vector2f Aircraft::GetSize() {
-	return size;
+void Aircraft::SetSpeed(float speed) {
+	this->speed = speed;
+}
+
+float Aircraft::GetSpeed() {
+	return speed;
+}
+
+void Aircraft::SetRotateSpeed(float angle) {
+	this->rotateSpeed = angle;
+}
+
+float Aircraft::GetRotateSpeed() {
+	return rotateSpeed;
+}
+
+void Aircraft::SetTexture(sf::Texture& texture) {
+	setTexture(texture);
+	UpdateSpriteSize();
 }
 
 void Aircraft::SetDirection(float angle) {
 	headingAngle = angle;
 }
 
-sf::Vector2f Aircraft::GetDirection() {
-	return sf::Vector2f(cos(headingAngle), sin(headingAngle));
+float Aircraft::GetDirection() {
+	return headingAngle;
 }
 
 void Aircraft::Move(float dt) {
-	move(sf::Vector2f(cos(headingAngle), sin(headingAngle) * speed * dt));
+	move(sf::Vector2f(cos(headingAngle *3.14 / 180), sin(headingAngle * 3.14 / 180)) * speed * dt);
+}
+
+
+void Aircraft::RotateLeft(float dt) {
+	float rotation = -rotateSpeed * dt;
+
+	rotate(rotation);
+
+	headingAngle = getRotation();
+}
+
+void Aircraft::RotateRight(float dt) {
+
+	float rotation = rotateSpeed * dt;
+
+	rotate(rotation);
+
+	headingAngle = getRotation();
+	
 }
