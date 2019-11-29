@@ -36,6 +36,23 @@ float Aircraft::GetSpeed() {
 	return speed;
 }
 
+void Aircraft::SetHeading(float angle) {
+	headingAngle = angle;
+	setRotation(headingAngle);
+}
+
+float Aircraft::GetHeading() {
+	return headingAngle;
+}
+
+void Aircraft::SetForce(float force) {
+	this->force = force;
+}
+
+float Aircraft::GetForce() {
+	return force;
+}
+
 void Aircraft::SetRotateSpeed(float angle) {
 	this->rotateSpeed = angle;
 }
@@ -49,16 +66,12 @@ void Aircraft::SetTexture(sf::Texture& texture) {
 	UpdateSpriteSize();
 }
 
-void Aircraft::SetDirection(float angle) {
-	headingAngle = angle;
-}
 
-float Aircraft::GetDirection() {
-	return headingAngle;
-}
 
 void Aircraft::Move(float dt) {
-	move(sf::Vector2f(cos(headingAngle *3.14 / 180), sin(headingAngle * 3.14 / 180)) * speed * dt);
+
+	move(velocity * dt);
+	//move(sf::Vector2f(cos(headingAngle *3.14 / 180), sin(headingAngle * 3.14 / 180)) * speed * dt);
 }
 
 
@@ -78,4 +91,8 @@ void Aircraft::RotateRight(float dt) {
 
 	headingAngle = getRotation();
 	
+}
+
+void Aircraft::Accelerate(float dt) {
+	velocity += sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * force * dt;
 }

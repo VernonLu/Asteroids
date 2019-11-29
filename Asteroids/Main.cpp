@@ -9,8 +9,8 @@
 #include <iostream>
 
 #include "Aircraft.h"
-
-sf::RenderWindow window(sf::VideoMode(1366, 768), "Asteroids");
+sf::Vector2f winSize(1366, 768);
+sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids");
 sf::Texture aircraftTex;
 
 
@@ -24,9 +24,10 @@ int main() {
 	
 	Aircraft player;
 	player.SetRadius(50);
-	player.SetSpeed(400);
-	player.SetRotateSpeed(120);
-	player.setPosition(100, 100);
+	player.SetForce(100);
+	player.SetHeading(270);
+	player.SetRotateSpeed(240);
+	player.setPosition(winSize / 2.f);
 	player.SetTexture(aircraftTex);
 
 	sf::Clock clock;
@@ -45,10 +46,12 @@ int main() {
 			player.RotateRight(deltaTime);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-			player.Move(deltaTime);
+			player.Accelerate(deltaTime);
 		}
 
-		float d = player.GetDirection();
+		player.Move(deltaTime);
+
+		float d = player.GetHeading();
 		std::cout << cos(d * 3.14 / 180) <<  ", " << sin(d * 3.14 / 180) << "\n";
 		window.clear();
 		window.draw(player);
