@@ -2,18 +2,19 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 class Bullet : public sf::CircleShape{
+private:
+	bool enabled;
 public:
 	Bullet();
 	~Bullet();
 
-private:
 
 };
 
-Bullet::Bullet()
-{
+Bullet::Bullet() {
+	enabled = true;
 }
 
-Bullet::~Bullet()
-{
+Bullet::~Bullet() {
+
 }
