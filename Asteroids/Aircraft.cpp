@@ -10,9 +10,11 @@ void Aircraft::UpdateSpriteSize() {
 
 Aircraft::Aircraft() {
 	radius = 1;
+	force = 0;
+	velocity = sf::Vector2f(0, 0);
 	headingAngle = 0;
-	speed = 0;
 	rotateSpeed = 0;
+	thrustSound.setLoop(true);
 	setPosition(1, 1);
 }
 
@@ -28,13 +30,6 @@ float Aircraft::GetRadius() {
 	return radius;
 }
 
-void Aircraft::SetSpeed(float speed) {
-	this->speed = speed;
-}
-
-float Aircraft::GetSpeed() {
-	return speed;
-}
 
 void Aircraft::SetHeading(float angle) {
 	headingAngle = angle;
@@ -66,14 +61,18 @@ void Aircraft::SetTexture(sf::Texture& texture) {
 	UpdateSpriteSize();
 }
 
-
+void Aircraft::SetThrustSound(sf::SoundBuffer& sound) {
+	thrustSound.setBuffer(sound);
+}
 
 void Aircraft::Move(float dt) {
 
 	move(velocity * dt);
-	//move(sf::Vector2f(cos(headingAngle *3.14 / 180), sin(headingAngle * 3.14 / 180)) * speed * dt);
 }
 
+void Aircraft::Accelerate(float dt) {
+	velocity += sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * force * dt;
+}
 
 void Aircraft::RotateLeft(float dt) {
 	float rotation = -rotateSpeed * dt;
@@ -93,6 +92,27 @@ void Aircraft::RotateRight(float dt) {
 	
 }
 
-void Aircraft::Accelerate(float dt) {
-	velocity += sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * force * dt;
+void Aircraft::Attack() {
+
 }
+
+void Aircraft::Update(float dt) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		RotateLeft(dt);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		RotateRight(dt);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		Accelerate(dt);
+		if (thrustSound.getStatus() != sf::SoundSource::Status::Playing) {
+			thrustSound.play();
+		}
+	}
+	else {
+		thrustSound.pause();
+	}
+
+	Move(dt);
+}
+

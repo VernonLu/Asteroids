@@ -1,32 +1,28 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 class Aircraft : public sf::Sprite {
 private:
 	float radius;
-
-	float speed;
-
-	sf::Vector2f direction;
-
+	
 	float force;
 
 	sf::Vector2f velocity;
 
 	float headingAngle;
-
 	
 	float rotateSpeed;
+
+	sf::Sound thrustSound;
 
 	void UpdateSpriteSize();
 
 public:
 	Aircraft();
 	~Aircraft();
+
 	void SetRadius(float radius);
 	float GetRadius();
-
-	void SetSpeed(float speed);
-	float GetSpeed();
 
 	void SetHeading(float angle);
 	float GetHeading();
@@ -39,9 +35,18 @@ public:
 
 	void SetTexture(sf::Texture& texture);
 
-	void Move(float dt);
-	void RotateLeft(float dt);
-	void RotateRight(float dt);
+	void SetThrustSound(sf::SoundBuffer& sound);
+
 	void Accelerate(float dt);
-		
+
+	void Move(float dt);
+
+	void RotateLeft(float dt);
+	void RotateRight(float dt);		
+
+	void Attack();
+
+	void Update(float dt);
+
+	void Destroy();
 };

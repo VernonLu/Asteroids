@@ -9,18 +9,41 @@
 #include <iostream>
 
 #include "Aircraft.h"
+
+
 sf::Vector2f winSize(1366, 768);
+
 sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids");
+
+sf::Sprite bg;
+
 sf::Texture aircraftTex;
+sf::Texture backgroundTex;
+
+sf::SoundBuffer backgroundBuffer;
+sf::Sound backgroundSound(backgroundBuffer);
+
+sf::SoundBuffer thrustBuffer;
 
 
 bool LoadResources() {
-	if (!aircraftTex.loadFromFile("resources/Aircraft.png")) { return false; }
+	if (!aircraftTex.loadFromFile("resources/Textures/aircraft_player.png")) { return false; }
+	if (!backgroundTex.loadFromFile("resources/Textures/texture_background.jpg")) { return false; }
+	
+	if (!backgroundBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
+	if (!thrustBuffer.loadFromFile("resources/Audio/thrust1.wav")) { return false; }
 	return true;
+}
+void Setupbackground(){
+	bg.setTexture(backgroundTex);
+
+
 }
 
 int main() {
 	if (!LoadResources()) { return EXIT_FAILURE; }
+
+	bg.setTexture(backgroundTex);
 	
 	Aircraft player;
 	player.SetRadius(50);
@@ -29,8 +52,11 @@ int main() {
 	player.SetRotateSpeed(240);
 	player.setPosition(winSize / 2.f);
 	player.SetTexture(aircraftTex);
+	player.SetThrustSound(thrustBuffer);
 
 	sf::Clock clock;
+	backgroundSound.play();
+	backgroundSound.setLoop(true);
 
 	while (window.isOpen()) {
 		sf::Event event;
@@ -39,21 +65,12 @@ int main() {
 				window.close();
 		}
 		float deltaTime = clock.restart().asSeconds();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-			player.RotateLeft(deltaTime);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-			player.RotateRight(deltaTime);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-			player.Accelerate(deltaTime);
-		}
 
-		player.Move(deltaTime);
 
-		float d = player.GetHeading();
-		std::cout << cos(d * 3.14 / 180) <<  ", " << sin(d * 3.14 / 180) << "\n";
+		player.Update(deltaTime);
+
 		window.clear();
+		window.draw(bg);
 		window.draw(player);
 		window.display();
 	}
