@@ -57,6 +57,7 @@ float Aircraft::GetRotateSpeed() {
 }
 
 void Aircraft::SetTexture(sf::Texture& texture) {
+	texture.generateMipmap();
 	setTexture(texture);
 	UpdateSpriteSize();
 }

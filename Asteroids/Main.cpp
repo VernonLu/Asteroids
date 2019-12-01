@@ -12,6 +12,7 @@
 #include "GameState.h"
 #include "Button.h"
 #include "Aircraft.h"
+#include "HealthBar.h"
 
 
 sf::Vector2f winSize(1366, 768);
@@ -25,9 +26,11 @@ sf::Sprite bg;
 sf::Texture aircraftTex;
 sf::Texture backgroundTex;
 sf::Texture btnTex;
+sf::Texture health;
+sf::Texture healthBg;
 
-sf::SoundBuffer backgroundBuffer;
-sf::Sound backgroundSound(backgroundBuffer);
+sf::SoundBuffer bgmBuffer;
+sf::Sound bgm(bgmBuffer);
 
 sf::SoundBuffer thrustBuffer;
 
@@ -41,8 +44,10 @@ bool LoadResources() {
 	if (!aircraftTex.loadFromFile("resources/Textures/aircraft_player.png")) { return false; }
 	if (!backgroundTex.loadFromFile("resources/Textures/texture_background.jpg")) { return false; }
 	if (!btnTex.loadFromFile("resources/Textures/texture_button.png")) { return false; }
+	if (!health.loadFromFile("resources/Textures/heart.png")) { return false; }
+	if (!healthBg.loadFromFile("resources/Textures/heart_bg.png")) { return false; }
 	
-	if (!backgroundBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
+	if (!bgmBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
 	if (!thrustBuffer.loadFromFile("resources/Audio/thrust1.wav")) { return false; }
 	return true;
 }
@@ -57,8 +62,8 @@ void StartGame() {
 }
 
 void Start() {
-	backgroundSound.play();
-	backgroundSound.setLoop(true);
+	bgm.play();
+	bgm.setLoop(true);
 }
 
 void LoadLevel() {
@@ -93,6 +98,14 @@ int main() {
 	player.setPosition(winSize / 2.f);
 	player.SetTexture(aircraftTex);
 	player.SetThrustSound(thrustBuffer);
+
+	HealthBar healthBar(3);
+
+	healthBar.SetTexture(health);
+	healthBar.SetBgTexture(healthBg);
+	healthBar.SetSize(60, 20);
+	healthBar.SetPosition(1, 1);
+
 
 	sf::Clock clock;
 
@@ -131,9 +144,11 @@ int main() {
 				player.Update(deltaTime);
 			}
 
-
 			window.draw(bg);
+
+
 			window.draw(player);
+			healthBar.Draw(window);
 		} break;
 		default:
 			break;
