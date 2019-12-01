@@ -95,7 +95,7 @@ int main() {
 	player.SetForce(100);
 	player.SetHeading(270);
 	player.SetRotateSpeed(240);
-	player.setPosition(winSize / 2.f);
+	player.SetPosition(winSize / 2.f);
 	player.SetTexture(aircraftTex);
 	player.SetThrustSound(thrustBuffer);
 
@@ -126,7 +126,7 @@ int main() {
 
 			startBtn.Update(mousePos);
 
-			startBtn.Draw(window);
+			window.draw(startBtn);
 		} break;
 		case GameState::STATE_OPTION: {
 			
@@ -147,8 +147,8 @@ int main() {
 			window.draw(bg);
 
 
+			window.draw(healthBar);
 			window.draw(player);
-			healthBar.Draw(window);
 		} break;
 		default:
 			break;

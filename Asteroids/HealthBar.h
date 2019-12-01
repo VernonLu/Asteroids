@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-class HealthBar {
+class HealthBar : public sf::Drawable {
 private:
 	int curHealth;
 	int maxHealth;
@@ -26,5 +26,5 @@ public:
 	void EncreaseMaxHealth(int value = 1);
 	void DecreaseMaxHealth(int value = 1);
 	bool isEmpty();
-	void Draw(sf::RenderTarget& target);
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

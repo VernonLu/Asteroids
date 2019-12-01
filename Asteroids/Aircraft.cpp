@@ -1,11 +1,11 @@
 #include "Aircraft.h"
 
 void Aircraft::UpdateSpriteSize() {
-	if (getTexture() == NULL) { return; }
-	sf::Vector2u texSize = getTexture()->getSize();
-	setOrigin(texSize.x / 2, texSize.y / 2);
+	if (aircraft.getTexture() == NULL) { return; }
+	sf::Vector2u texSize = aircraft.getTexture()->getSize();
+	aircraft.setOrigin(texSize.x / 2, texSize.y / 2);
 	sf::Vector2f scale(radius / texSize.x, radius / texSize.y);
-	setScale(scale);
+	aircraft.setScale(scale);
 }
 
 Aircraft::Aircraft() {
@@ -15,10 +15,14 @@ Aircraft::Aircraft() {
 	headingAngle = 0;
 	rotateSpeed = 0;
 	thrustSound.setLoop(true);
-	setPosition(1, 1);
+	aircraft.setPosition(1, 1);
 }
 
 Aircraft::~Aircraft() {}
+
+void Aircraft::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	target.draw(aircraft);
+}
 
 void Aircraft::SetRadius(float radius) {
 	this->radius = radius;
@@ -30,10 +34,24 @@ float Aircraft::GetRadius() {
 	return radius;
 }
 
+void Aircraft::SetPosition(sf::Vector2f position) {
+	this->position = position;
+	aircraft.setPosition(position);
+}
+
+void Aircraft::SetPosition(float x, float y) {
+	position = sf::Vector2f(x, y);
+	aircraft.setPosition(position);
+}
+
+sf::Vector2f Aircraft::GetPosition() {
+	return position;
+}
+
 
 void Aircraft::SetHeading(float angle) {
 	headingAngle = angle;
-	setRotation(headingAngle);
+	aircraft.setRotation(headingAngle);
 }
 
 float Aircraft::GetHeading() {
@@ -58,8 +76,12 @@ float Aircraft::GetRotateSpeed() {
 
 void Aircraft::SetTexture(sf::Texture& texture) {
 	texture.generateMipmap();
-	setTexture(texture);
+	aircraft.setTexture(texture);
 	UpdateSpriteSize();
+}
+
+void Aircraft::SetFlameTexture(sf::Texture& texture) {
+	flame.setTexture(texture);
 }
 
 void Aircraft::SetThrustSound(sf::SoundBuffer& sound) {
@@ -67,8 +89,8 @@ void Aircraft::SetThrustSound(sf::SoundBuffer& sound) {
 }
 
 void Aircraft::Move(float dt) {
-
-	move(velocity * dt);
+	position += velocity * dt;
+	aircraft.move(velocity * dt);
 }
 
 void Aircraft::Accelerate(float dt) {
@@ -78,18 +100,18 @@ void Aircraft::Accelerate(float dt) {
 void Aircraft::RotateLeft(float dt) {
 	float rotation = -rotateSpeed * dt;
 
-	rotate(rotation);
+	aircraft.rotate(rotation);
 
-	headingAngle = getRotation();
+	headingAngle = aircraft.getRotation();
 }
 
 void Aircraft::RotateRight(float dt) {
 
 	float rotation = rotateSpeed * dt;
 
-	rotate(rotation);
+	aircraft.rotate(rotation);
 
-	headingAngle = getRotation();
+	headingAngle = aircraft.getRotation();
 	
 }
 

@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-class Button{
+class Button : public sf::Drawable {
 private:
 
 	sf::Text caption;
@@ -27,6 +27,8 @@ public:
 	
 	~Button();
 
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
 	void SetPosition(sf::Vector2f position);
 
 	void SetSize(sf::Vector2f size);
@@ -42,8 +44,6 @@ public:
 	void Hover(sf::Vector2i mousePos);
 
 	void Click();
-
-	void Draw(sf::RenderWindow& target);
 
 	void Deselect();
 

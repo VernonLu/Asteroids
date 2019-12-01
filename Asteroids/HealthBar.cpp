@@ -1,6 +1,4 @@
 #include "HealthBar.h"
-#include <iostream>
-
 
 void HealthBar::UpdateHealth() {
 	sprite.setTextureRect(sf::IntRect(0, 0, texSize.x * (curHealth < 0 ? 0 : curHealth), texSize.y));
@@ -92,7 +90,7 @@ bool HealthBar::isEmpty() {
 	return curHealth < 0;
 }
 
-void HealthBar::Draw(sf::RenderTarget& target) {
+void HealthBar::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(bgSprite);
 	target.draw(sprite);
 }

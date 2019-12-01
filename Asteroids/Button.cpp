@@ -18,6 +18,11 @@ Button::Button() {
 
 Button::~Button() {}
 
+void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	target.draw(sprite);
+	target.draw(caption);
+}
+
 void Button::SetPosition(sf::Vector2f position) {
 	this->position = position;
 	sprite.setPosition(position);
@@ -78,13 +83,7 @@ void Button::Hover(sf::Vector2i mousePos) {
 
 void Button::Click(){
 	if (!hovered) { return; }
-
 	clickEvent();
-}
-
-void Button::Draw(sf::RenderWindow& target) {
-	target.draw(sprite);
-	target.draw(caption);
 }
 
 void Button::Deselect() {
