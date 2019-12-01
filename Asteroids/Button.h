@@ -3,11 +3,8 @@
 #include <SFML/Audio.hpp>
 
 class Button{
-
 private:
-	/*sf::Texture normalTex;
-	sf::Texture highlightTex;
-	sf::Texture pressedTex;*/
+
 	sf::Text caption;
 
 	sf::Sprite sprite;
@@ -23,9 +20,10 @@ private:
 
 	void (*clickEvent)();
 
+	void UpdateDisplay();
 public:
-	Button(sf::Vector2f size, sf::Vector2f position, void clickEvent());
-
+	Button();
+	
 	~Button();
 
 	void SetPosition(sf::Vector2f position);

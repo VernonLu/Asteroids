@@ -11,11 +11,13 @@ private:
 
 public:
 	Bullet();
+
 	~Bullet();
+
 	void Move(float dt);
 
-
 	void Start();
+
 	void Update(float dt);
 
 };

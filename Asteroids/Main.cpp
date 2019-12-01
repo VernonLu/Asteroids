@@ -15,7 +15,7 @@
 
 sf::Vector2f winSize(1366, 768);
 sf::ContextSettings settings;
-GameState state = GameState::STATE_MENU;
+GameState state;
 
 sf::Font font;
 
@@ -55,7 +55,8 @@ void StartGame() {
 }
 
 void Start() {
-
+	backgroundSound.play();
+	backgroundSound.setLoop(true);
 }
 
 void LoadLevel() {
@@ -66,6 +67,7 @@ int main() {
 
 	bool gameStart = false;
 	bool loadLevel = false;
+	state = GameState::STATE_MENU;
 
 	settings.antialiasingLevel = 8;
 	sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default, settings);
@@ -73,6 +75,13 @@ int main() {
 
 	bg.setTexture(backgroundTex);
 	
+	startBtn.SetSize(sf::Vector2f(60, 40));
+	startBtn.SetTexture(btnTex);
+	startBtn.SetClickEvent(&StartGame);
+	startBtn.SetCaption(font, "Start", 40);
+	startBtn.SetPosition(winSize / 2.f);
+
+
 	Aircraft player;
 	player.SetRadius(50);
 	player.SetForce(100);
@@ -83,8 +92,6 @@ int main() {
 	player.SetThrustSound(thrustBuffer);
 
 	sf::Clock clock;
-	backgroundSound.play();
-	backgroundSound.setLoop(true);
 
 	while (window.isOpen()) {
 		sf::Event event;
@@ -92,15 +99,22 @@ int main() {
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+
 		float deltaTime = clock.restart().asSeconds();
 
+		window.clear();
 
 		switch (state) {
 		case GameState::STATE_MENU: {
+			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 
+			startBtn.Update(mousePos);
+
+			startBtn.Draw(window);
 		} break;
-		case GameState::STATE_OPTION:
-			break;
+		case GameState::STATE_OPTION: {
+			
+		}break;
 		case GameState::STATE_GAME: {
 			if (!gameStart) {
 				Start();
@@ -109,16 +123,16 @@ int main() {
 			if (!loadLevel) {
 
 			}
+
+
+			player.Update(deltaTime);
+
+			window.draw(bg);
+			window.draw(player);
 		} break;
 		default:
 			break;
 		}
-
-		player.Update(deltaTime);
-
-		window.clear();
-		window.draw(bg);
-		window.draw(player);
 		window.display();
 	}
 	return EXIT_SUCCESS;
