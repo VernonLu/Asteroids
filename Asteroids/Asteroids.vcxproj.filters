@@ -21,6 +21,9 @@
     <ClCompile Include="Aircraft.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Aircraft.h">

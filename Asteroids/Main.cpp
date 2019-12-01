@@ -12,8 +12,9 @@
 
 
 sf::Vector2f winSize(1366, 768);
+sf::ContextSettings settings;
 
-sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids");
+sf::Font font;
 
 sf::Sprite bg;
 
@@ -26,7 +27,10 @@ sf::Sound backgroundSound(backgroundBuffer);
 sf::SoundBuffer thrustBuffer;
 
 
+
 bool LoadResources() {
+	if (!font.loadFromFile("resources/Font/sansation.ttf")) { return false; }
+
 	if (!aircraftTex.loadFromFile("resources/Textures/aircraft_player.png")) { return false; }
 	if (!backgroundTex.loadFromFile("resources/Textures/texture_background.jpg")) { return false; }
 	
@@ -40,7 +44,20 @@ void Setupbackground(){
 
 }
 
+void Start() {
+
+}
+void LoadLevel() {
+
+}
+
 int main() {
+
+	bool gameStart = false;
+	bool loadLevel = false;
+
+	settings.antialiasingLevel = 8;
+	sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default, settings);
 	if (!LoadResources()) { return EXIT_FAILURE; }
 
 	bg.setTexture(backgroundTex);
@@ -66,6 +83,13 @@ int main() {
 		}
 		float deltaTime = clock.restart().asSeconds();
 
+		if (!gameStart) {
+			Start();
+			gameStart = true;
+		}
+		if (!loadLevel) {
+
+		}
 
 		player.Update(deltaTime);
 
