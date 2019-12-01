@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "GameState.h"
+#include "Button.h"
 #include "Aircraft.h"
 
 
@@ -22,12 +23,14 @@ sf::Sprite bg;
 
 sf::Texture aircraftTex;
 sf::Texture backgroundTex;
+sf::Texture btnTex;
 
 sf::SoundBuffer backgroundBuffer;
 sf::Sound backgroundSound(backgroundBuffer);
 
 sf::SoundBuffer thrustBuffer;
 
+Button startBtn;
 
 
 bool LoadResources() {
@@ -35,6 +38,7 @@ bool LoadResources() {
 
 	if (!aircraftTex.loadFromFile("resources/Textures/aircraft_player.png")) { return false; }
 	if (!backgroundTex.loadFromFile("resources/Textures/texture_background.jpg")) { return false; }
+	if (!btnTex.loadFromFile("resources/Textures/texture_button.png")) { return false; }
 	
 	if (!backgroundBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
 	if (!thrustBuffer.loadFromFile("resources/Audio/thrust1.wav")) { return false; }
@@ -46,9 +50,14 @@ void Setupbackground(){
 
 }
 
+void StartGame() {
+	state = GameState::STATE_GAME;
+}
+
 void Start() {
 
 }
+
 void LoadLevel() {
 
 }
@@ -85,12 +94,24 @@ int main() {
 		}
 		float deltaTime = clock.restart().asSeconds();
 
-		if (!gameStart) {
-			Start();
-			gameStart = true;
-		}
-		if (!loadLevel) {
 
+		switch (state) {
+		case GameState::STATE_MENU: {
+
+		} break;
+		case GameState::STATE_OPTION:
+			break;
+		case GameState::STATE_GAME: {
+			if (!gameStart) {
+				Start();
+				gameStart = true;
+			}
+			if (!loadLevel) {
+
+			}
+		} break;
+		default:
+			break;
 		}
 
 		player.Update(deltaTime);
