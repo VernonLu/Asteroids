@@ -8,11 +8,13 @@
 
 #include <iostream>
 
+#include "GameState.h"
 #include "Aircraft.h"
 
 
 sf::Vector2f winSize(1366, 768);
 sf::ContextSettings settings;
+GameState state = GameState::STATE_MENU;
 
 sf::Font font;
 
