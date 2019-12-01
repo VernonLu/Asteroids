@@ -10,6 +10,7 @@ private:
 	sf::Sprite sprite;
 
 	sf::Color normalColor;
+
 	sf::Color highlightColor;
 
 	sf::Vector2f size;
@@ -20,7 +21,7 @@ private:
 
 	void (*clickEvent)();
 
-	void UpdateDisplay();
+	void UpdateSize();
 public:
 	Button();
 	
@@ -32,7 +33,7 @@ public:
 
 	void SetClickEvent(void clickEvent());
 
-	void SetCaption(sf::Font& font, std::string str, float size);
+	void SetCaption(sf::Font& font, std::string str, float fontSize);
 
 	void SetTexture(sf::Texture& texture);
 

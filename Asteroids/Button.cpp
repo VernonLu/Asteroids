@@ -1,10 +1,10 @@
 #include "Button.h"
 
-void Button::UpdateDisplay() {
+void Button::UpdateSize() {
 	if (sprite.getTexture() == nullptr) { return; }
 	sf::Vector2u texSize = (sprite.getTexture()->getSize());
+	sprite.setOrigin(texSize.x / 2, texSize.y / 2);
 	sprite.setScale(size.x / texSize.x, size.y / texSize.y);
-	sprite.setOrigin(size / 2.f);
 }
 
 Button::Button() {
@@ -21,11 +21,12 @@ Button::~Button() {}
 void Button::SetPosition(sf::Vector2f position) {
 	this->position = position;
 	sprite.setPosition(position);
+	caption.setPosition(position);
 }
 
 void Button::SetSize(sf::Vector2f size) {
 	this->size = size;
-	UpdateDisplay();
+	UpdateSize();
 }
 
 void Button::SetClickEvent(void clickEvent()) {
@@ -47,7 +48,7 @@ void Button::SetCaption(sf::Font& font, std::string str, float fontSize) {
 
 void Button::SetTexture(sf::Texture& texture) {
 	sprite.setTexture(texture);
-	UpdateDisplay();
+	UpdateSize();
 }
 
 void Button::SetColor(sf::Color color) {
@@ -69,7 +70,6 @@ void Button::Hover(sf::Vector2i mousePos) {
 		caption.setFillColor(highlightColor);
 		hovered = true;
 		return;
-
 	}
 	sprite.setColor(normalColor);
 	caption.setFillColor(normalColor);

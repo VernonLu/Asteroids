@@ -7,6 +7,7 @@
 #include <SFML/Main.hpp>
 
 #include <iostream>
+#include <vector>
 
 #include "GameState.h"
 #include "Button.h"
@@ -30,6 +31,7 @@ sf::Sound backgroundSound(backgroundBuffer);
 
 sf::SoundBuffer thrustBuffer;
 
+std::vector<Button*> menuBtnList;
 Button startBtn;
 
 
@@ -67,6 +69,7 @@ int main() {
 
 	bool gameStart = false;
 	bool loadLevel = false;
+	bool pause = false;
 	state = GameState::STATE_MENU;
 
 	settings.antialiasingLevel = 8;
@@ -75,11 +78,11 @@ int main() {
 
 	bg.setTexture(backgroundTex);
 	
-	startBtn.SetSize(sf::Vector2f(60, 40));
+	startBtn.SetSize(sf::Vector2f(240, 80));
 	startBtn.SetTexture(btnTex);
 	startBtn.SetClickEvent(&StartGame);
-	startBtn.SetCaption(font, "Start", 40);
 	startBtn.SetPosition(winSize / 2.f);
+	startBtn.SetCaption(font, "Start", 40);
 
 
 	Aircraft player;
@@ -119,13 +122,15 @@ int main() {
 			if (!gameStart) {
 				Start();
 				gameStart = true;
+				loadLevel = false;
 			}
 			if (!loadLevel) {
-
+				loadLevel = true;
+			}
+			if (!pause) {
+				player.Update(deltaTime);
 			}
 
-
-			player.Update(deltaTime);
 
 			window.draw(bg);
 			window.draw(player);
