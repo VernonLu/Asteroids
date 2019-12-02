@@ -9,11 +9,11 @@ void Aircraft::UpdateSpriteSize() {
 }
 
 Aircraft::Aircraft() {
-	radius = 1;
-	force = 0;
+	SetRadius(50);
+	SetForce(100);
+	SetHeading(270);
+	SetRotateSpeed(240);
 	velocity = sf::Vector2f(0, 0);
-	headingAngle = 0;
-	rotateSpeed = 0;
 	thrustSound.setLoop(true);
 	aircraft.setPosition(1, 1);
 }

@@ -96,10 +96,6 @@ int main() {
 	}
 
 	Aircraft player;
-	player.SetRadius(50);
-	player.SetForce(100);
-	player.SetHeading(270);
-	player.SetRotateSpeed(240);
 	player.SetPosition(winSize / 2.f);
 	player.SetTexture(aircraftTex);
 	player.SetThrustSound(thrustBuffer);
@@ -153,6 +149,11 @@ int main() {
 			window.draw(bg);
 
 			for (auto bullet : bulletPool) {
+
+				sf::Vector2f position = bullet->getPosition();
+				if (position.x < 0 || position.x > winSize.x || position.y <0 || position.y > winSize.y) {
+					bullet->enabled = false;
+				}
 				if (!bullet->enabled) { continue; }
 				bullet->Update(deltaTime);
 				window.draw(*bullet);
@@ -160,6 +161,9 @@ int main() {
 
 			window.draw(healthBar);
 			window.draw(player);
+		} break;
+		case GameState::STATE_OVER: {
+
 		} break;
 		default:
 			break;
