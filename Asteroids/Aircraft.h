@@ -1,6 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <vector>
+
+#include "Bullet.h"
+
 class Aircraft : public sf::Drawable {
 private:
 
@@ -21,7 +25,13 @@ private:
 	sf::Sound thrustSound;
 
 	sf::Sprite flame;
-	
+
+	std::vector<Bullet*>* bulletPool;
+
+	float shootInterval = 0.1f;
+
+	float lastShootTime = 0;
+
 	void UpdateSpriteSize();
 
 public:
@@ -53,6 +63,8 @@ public:
 
 	void SetThrustSound(sf::SoundBuffer& sound);
 
+	void SetBulletPool(std::vector<Bullet*>* bulletPool);
+
 	/* Member functions*/
 	void Accelerate(float dt);
 
@@ -65,6 +77,4 @@ public:
 	void Attack();
 
 	void Update(float dt);
-
-	void Destroy();
 };

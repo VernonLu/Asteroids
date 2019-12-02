@@ -88,6 +88,10 @@ void Aircraft::SetThrustSound(sf::SoundBuffer& sound) {
 	thrustSound.setBuffer(sound);
 }
 
+void Aircraft::SetBulletPool(std::vector<Bullet*>* bulletPool) {
+	this->bulletPool = bulletPool;
+}
+
 void Aircraft::Move(float dt) {
 	position += velocity * dt;
 	aircraft.move(velocity * dt);
@@ -117,6 +121,17 @@ void Aircraft::RotateRight(float dt) {
 
 void Aircraft::Attack() {
 
+	if (lastShootTime < shootInterval) { return; }
+	
+	for (auto bullet : (*bulletPool)) {
+		if (bullet->enabled) { continue; }
+		bullet->SetHeading(headingAngle);
+		bullet->SetSpeed(200);
+		bullet->setPosition(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * radius + position);
+		bullet->enabled = true;
+		break;
+	}
+	lastShootTime = 0;
 }
 
 void Aircraft::Update(float dt) {
@@ -134,6 +149,11 @@ void Aircraft::Update(float dt) {
 	}
 	else {
 		thrustSound.pause();
+	}
+
+	lastShootTime += dt;
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		Attack();
 	}
 
 	Move(dt);

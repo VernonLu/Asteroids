@@ -89,6 +89,11 @@ int main() {
 	startBtn.SetPosition(winSize / 2.f);
 	startBtn.SetCaption(font, "Start", 40);
 
+	std::vector<Bullet*> bulletPool;
+	for (int i = 0; i < 10; ++i) {
+		Bullet* bullet = new Bullet();
+		bulletPool.push_back(bullet);
+	}
 
 	Aircraft player;
 	player.SetRadius(50);
@@ -98,6 +103,7 @@ int main() {
 	player.SetPosition(winSize / 2.f);
 	player.SetTexture(aircraftTex);
 	player.SetThrustSound(thrustBuffer);
+	player.SetBulletPool(&bulletPool);
 
 	HealthBar healthBar(3);
 
@@ -146,6 +152,11 @@ int main() {
 
 			window.draw(bg);
 
+			for (auto bullet : bulletPool) {
+				if (!bullet->enabled) { continue; }
+				bullet->Update(deltaTime);
+				window.draw(*bullet);
+			}
 
 			window.draw(healthBar);
 			window.draw(player);
