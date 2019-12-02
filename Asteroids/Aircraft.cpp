@@ -1,5 +1,5 @@
 #include "Aircraft.h"
-
+#include <iostream>
 void Aircraft::UpdateSpriteSize() {
 	if (aircraft.getTexture() == NULL) { return; }
 	sf::Vector2u texSize = aircraft.getTexture()->getSize();
@@ -9,6 +9,7 @@ void Aircraft::UpdateSpriteSize() {
 }
 
 Aircraft::Aircraft() {
+	destroied = false;
 	SetRadius(50);
 	SetForce(100);
 	SetHeading(270);
@@ -16,6 +17,7 @@ Aircraft::Aircraft() {
 	velocity = sf::Vector2f(0, 0);
 	thrustSound.setLoop(true);
 	aircraft.setPosition(1, 1);
+	boundary = sf::Vector2f(1366, 768);
 }
 
 Aircraft::~Aircraft() {}
@@ -92,9 +94,40 @@ void Aircraft::SetBulletPool(std::vector<Bullet*>* bulletPool) {
 	this->bulletPool = bulletPool;
 }
 
+void Aircraft::SetBoundary(sf::Vector2f boundary) {
+	this->boundary = boundary;
+}
+
+void Aircraft::SetBoundary(float x, float y) {
+	boundary = sf::Vector2f(x, y);
+}
+
+sf::Vector2f Aircraft::GetBoundary() {
+	return boundary;
+}
+
 void Aircraft::Move(float dt) {
 	position += velocity * dt;
 	aircraft.move(velocity * dt);
+
+	if (velocity.x > 0 && position.x > boundary.x + radius * 2) {
+		position.x -= boundary.x + radius * 4;
+		aircraft.setPosition(position);
+	}
+	if (velocity.x < 0 && position.x < -radius * 2) {
+		position.x += boundary.x + radius * 4;
+		aircraft.setPosition(position);
+	}
+
+	if (velocity.y > 0 && position.y > boundary.y + radius * 2) {
+		position.y = position.y - boundary.y - radius * 4;
+		aircraft.setPosition(position);
+		
+	}
+	if (velocity.y < 0 && position.y < -radius * 2) {
+		position.y = position.y + boundary.y + radius * 4;
+		aircraft.setPosition(position);
+	}
 }
 
 void Aircraft::Accelerate(float dt) {
@@ -135,13 +168,18 @@ void Aircraft::Attack() {
 }
 
 void Aircraft::Update(float dt) {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+	Move(dt);
+
+
+	if (destroied) { return; }
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 		RotateLeft(dt);
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
 		RotateRight(dt);
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
 		Accelerate(dt);
 		if (thrustSound.getStatus() != sf::SoundSource::Status::Playing) {
 			thrustSound.play();
@@ -152,10 +190,9 @@ void Aircraft::Update(float dt) {
 	}
 
 	lastShootTime += dt;
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		Attack();
 	}
 
-	Move(dt);
 }
 

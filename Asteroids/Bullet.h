@@ -20,12 +20,11 @@ public:
 	float GetHeading();
 
 	void SetSpeed(float speed);
-	float GetSped();
+	float GetSpeed();
 
 	void Move(float dt);
 	
+	void Disable();
+
 	void Update(float dt);
-
-
-
 };

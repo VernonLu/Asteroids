@@ -23,13 +23,18 @@ void Bullet::SetSpeed(float speed) {
 	this->speed = speed;
 }
 
-float Bullet::GetSped() {
+float Bullet::GetSpeed() {
 	return speed;
 }
 
 
 void Bullet::Move(float dt) {
 	move(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * speed * dt);
+}
+
+void Bullet::Disable() {
+	enabled = false;
+	setPosition(-99, -99);
 }
 
 void Bullet::Update(float dt) {

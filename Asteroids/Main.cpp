@@ -90,7 +90,7 @@ int main() {
 	startBtn.SetCaption(font, "Start", 40);
 
 	std::vector<Bullet*> bulletPool;
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 5000; ++i) {
 		Bullet* bullet = new Bullet();
 		bulletPool.push_back(bullet);
 	}

@@ -7,6 +7,7 @@
 
 class Aircraft : public sf::Drawable {
 private:
+	bool destroied;
 
 	sf::Sprite aircraft;
 
@@ -28,9 +29,12 @@ private:
 
 	std::vector<Bullet*>* bulletPool;
 
-	float shootInterval = 0.1f;
+	float shootInterval = 0.2f;
 
 	float lastShootTime = 0;
+
+
+	sf::Vector2f boundary;
 
 	void UpdateSpriteSize();
 
@@ -64,6 +68,10 @@ public:
 	void SetThrustSound(sf::SoundBuffer& sound);
 
 	void SetBulletPool(std::vector<Bullet*>* bulletPool);
+
+	void SetBoundary(sf::Vector2f boundary);
+	void SetBoundary(float x, float y);
+	sf::Vector2f GetBoundary();
 
 	/* Member functions*/
 	void Accelerate(float dt);
