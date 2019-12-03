@@ -15,6 +15,7 @@
 #include "Aircraft.h"
 #include "HealthBar.h"
 #include "Asteroid.h"
+#include "Score.h"
 
 
 sf::Vector2f winSize(1366, 768);
@@ -44,6 +45,7 @@ sf::SoundBuffer thrustBuffer;
 
 /*Text*/
 sf::Text debug;
+Score score;
 
 /*Button*/
 std::vector<Button*> menuBtnList;
@@ -95,6 +97,7 @@ int main() {
 
 	bool gameStart = false;
 	bool loadLevel = false;
+	bool respawn = false;
 	bool pause = false;
 	state = GameState::STATE_MENU;
 
@@ -113,7 +116,7 @@ int main() {
 		Asteroid* a = new Asteroid();
 		a->SetTexture(asteroidTex);
 		a->SetPosition(sf::Vector2f(rand() % 1366, (rand() % 768)));
-		a->SetDirection(773 - a->position.x + (rand() % 10 - 5)* 10, 384 - a->position.y + (rand() % 10 - 5) * 10);
+		a->SetDirection(rand() % 10, rand() % 10);
 		a->speed = rand() % 20 + 100;
 		a->boundary = winSize;
 		a->rotateSpeed = (rand() % 10 + 30);
@@ -159,7 +162,7 @@ int main() {
 		}
 
 		float deltaTime = clock.restart().asSeconds();
-		debug.setString(std::to_string((int)(1 / deltaTime))); 
+		//debug.setString(std::to_string((int)(1 / deltaTime))); 
 
 		window.clear();
 
@@ -171,53 +174,81 @@ int main() {
 
 			window.draw(startBtn);
 		} break;
-		case GameState::STATE_OPTION: {
-			
-		}break;
 		case GameState::STATE_GAME: {
+
+			/*GameSetup*/
 			if (!gameStart) {
 				Start();
+				score.setFont(font);
+				score.setCharacterSize(40);
+				score.setPosition(10, 80);
 				gameStart = true;
 				loadLevel = false;
 			}
 			if (!loadLevel) {
 				loadLevel = true;
 			}
+
+			/*Update*/
 			if (!pause) {
 				player.Update(deltaTime);
+				for (auto asteroid : largeAsteroid) {
+					asteroid->Update(deltaTime);
+				}
+
+				for (auto bullet : bulletPool) {
+
+					sf::Vector2f position = bullet->position;
+					if (position.x < 0 || position.x > winSize.x || position.y <0 || position.y > winSize.y) {
+						bullet->enable = false;
+					}
+					if (!bullet->enable) { continue; }
+					bullet->Update(deltaTime);
+				}
+
+
+
+				/*Collision Detection*/
+				for (int i = 0; i < largeAsteroid.size(); ++i) {
+					for (int j = i + 1; j < largeAsteroid.size(); ++j) {
+						sf::Vector2f diff = largeAsteroid[i]->position - largeAsteroid[j]->position;
+						float r2 = pow((largeAsteroid[i]->radius + largeAsteroid[j]->radius), 2);
+						if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
+							largeAsteroid[i]->Collide(*largeAsteroid[j]);
+							largeAsteroid[j]->Collide(*largeAsteroid[i]);
+						}
+					}
+				}
+
+				if (player.enable == false) {
+					healthBar.DecreaseHealth();
+					respawn = true;
+				}
 			}
 
+			
+
+			/*Render*/
 			window.draw(bg);
 
 			for (auto asteroid : largeAsteroid) {
-				asteroid->Update(deltaTime);
-				window.draw(*asteroid);
+				if(asteroid->enable)
+					window.draw(*asteroid);
 			}
-			for (int i = 0; i < largeAsteroid.size(); ++i) {
-				for (int j = i + 1; j < largeAsteroid.size(); ++j) {
-					sf::Vector2f diff = largeAsteroid[i]->position - largeAsteroid[j]->position;
-					float r2 = pow((largeAsteroid[i]->radius + largeAsteroid[j]->radius), 2);
-					if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
-						largeAsteroid[i]->Collide(*largeAsteroid[j]);
-						largeAsteroid[j]->Collide(*largeAsteroid[i]);
-					}
-				}
-			}
-
 			for (auto bullet : bulletPool) {
-
-				sf::Vector2f position = bullet->position;
-				if (position.x < 0 || position.x > winSize.x || position.y <0 || position.y > winSize.y) {
-					bullet->enable = false;
-				}
-				if (!bullet->enable) { continue; }
-				bullet->Update(deltaTime);
-				window.draw(*bullet);
+				if (bullet->enable)
+					window.draw(*bullet);
 			}
-
+			window.draw(player);
 
 			window.draw(healthBar);
-			window.draw(player);
+
+			window.draw(score);
+
+			/*GameOver*/
+			if (healthBar.isEmpty()) {
+				state = GameState::STATE_OVER;
+			}
 		} break;
 		case GameState::STATE_OVER: {
 

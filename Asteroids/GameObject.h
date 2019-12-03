@@ -9,6 +9,8 @@ public:
 
 	bool enable;
 
+	std::string tag;
+
 	float radius;
 
 	sf::Sprite sprite;

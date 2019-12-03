@@ -10,7 +10,7 @@ void Aircraft::UpdateSpriteSize() {
 
 Aircraft::Aircraft() {
 	enable = true;
-	SetRadius(50);
+	SetRadius(30);
 	SetForce(300);
 	SetHeading(270);
 	SetRotateSpeed(240);
@@ -120,7 +120,7 @@ void Aircraft::Move(float dt) {
 	sprite.move(velocity * dt);
 
 	if (velocity.x > 0 && position.x > boundary.x + radius * 2) {
-		position.x -= boundary.x + radius * 4;
+		position.x -= boundary.x + radius * 2;
 		sprite.setPosition(position);
 	}
 	if (velocity.x < 0 && position.x < -radius * 2) {
@@ -129,12 +129,12 @@ void Aircraft::Move(float dt) {
 	}
 
 	if (velocity.y > 0 && position.y > boundary.y + radius * 2) {
-		position.y = position.y - boundary.y - radius * 4;
+		position.y -= boundary.y + radius * 4;
 		sprite.setPosition(position);
 		
 	}
 	if (velocity.y < 0 && position.y < -radius * 2) {
-		position.y = position.y + boundary.y + radius * 4;
+		position.y += boundary.y + radius * 4;
 		sprite.setPosition(position);
 	}
 }
