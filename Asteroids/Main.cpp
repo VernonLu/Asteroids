@@ -81,6 +81,17 @@ bool LoadResources() {
 	return true;
 }
 
+
+/*Confirm Window*/
+bool Confirm(LPCWSTR str) {
+	return (MessageBox(
+		NULL,
+		str,
+		(LPCWSTR)L"Alert",//Caption
+		MB_YESNO | MB_ICONINFORMATION
+	) == 6);
+}
+
 void StartGame() {
 	state = GameState::STATE_GAME;
 }
@@ -167,8 +178,17 @@ int main() {
 	while (window.isOpen()) {
 		sf::Event event;
 		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed)
-				window.close();
+			if (event.type == sf::Event::Closed) {
+				pause = true;
+				if (Confirm(L"Exit")) {
+					window.close();
+					break;
+				}
+				else {
+					pause = false;
+					clock.restart();
+				}
+			}
 		}
 
 		float deltaTime = clock.restart().asSeconds();
