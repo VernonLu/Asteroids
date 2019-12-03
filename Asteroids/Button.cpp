@@ -29,6 +29,12 @@ void Button::SetPosition(sf::Vector2f position) {
 	caption.setPosition(position);
 }
 
+void Button::SetPosition(float x, float y) {
+	position = sf::Vector2f(x, y);
+	sprite.setPosition(position);
+	caption.setPosition(position);
+}
+
 void Button::SetSize(sf::Vector2f size) {
 	this->size = size;
 	UpdateSize();

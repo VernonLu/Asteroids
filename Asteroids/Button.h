@@ -31,6 +31,8 @@ public:
 
 	void SetPosition(sf::Vector2f position);
 
+	void SetPosition(float x, float y);
+
 	void SetSize(sf::Vector2f size);
 
 	void SetClickEvent(void clickEvent());

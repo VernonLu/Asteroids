@@ -17,10 +17,16 @@
 #include "Asteroid.h"
 #include "Score.h"
 
-
+/*Window*/
 sf::Vector2f winSize(1366, 768);
-sf::ContextSettings settings;
+sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default);
+
+/*GameState*/
 GameState state;
+bool gameStart = false;
+bool loadLevel = false;
+bool respawn = false;
+bool pause = false;
 
 /*Texture*/
 sf::Texture aircraftTex;
@@ -51,6 +57,7 @@ sf::Text endGameScore;
 sf::Vector2f btnSize(240, 80);
 std::vector<Button*> menuBtnList;
 Button startBtn;
+Button exitBtn;
 //Health Bar
 HealthBar healthBar(3);
 
@@ -92,8 +99,17 @@ bool Confirm(LPCWSTR str) {
 	) == 6);
 }
 
-void StartGame() {
+void Play() {
 	state = GameState::STATE_GAME;
+}
+void Exit() {
+	pause = true;
+	if (Confirm(L"Exit?")) {
+		window.close();
+	}
+	else {
+		pause = false;
+	}
 }
 
 void Init() {
@@ -106,9 +122,18 @@ void Init() {
 
 	startBtn.SetSize(sf::Vector2f(240, 80));
 	startBtn.SetTexture(btnTex);
-	startBtn.SetClickEvent(&StartGame);
-	startBtn.SetPosition(winSize / 2.f);
+	startBtn.SetClickEvent(&Play);
+	startBtn.SetPosition(winSize.x / 2.f, winSize.y /2 );
 	startBtn.SetCaption(font, "Start", 40);
+	menuBtnList.push_back(&startBtn);
+
+	exitBtn.SetSize(sf::Vector2f(240, 80));
+	exitBtn.SetTexture(btnTex);
+	exitBtn.SetClickEvent(&Exit);
+	exitBtn.SetPosition(winSize.x / 2.f, winSize.y / 2 + 100);
+	exitBtn.SetCaption(font, "Exit", 40);
+	exitBtn.SetColor(sf::Color::Red);
+	menuBtnList.push_back(&exitBtn);
 
 
 	healthBar.SetTexture(health);
@@ -158,16 +183,9 @@ void SpawnPlayer() {
 }
 
 int main() {
-	bool gameStart = false;
-	bool loadLevel = false;
-	bool respawn = false;
-	bool pause = false;
 
 	state = GameState::STATE_MENU;
 
-	settings.antialiasingLevel = 8;
-	
-	sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default, settings);
 	
 	if (!LoadResources()) { return EXIT_FAILURE; }
 
@@ -179,15 +197,7 @@ int main() {
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
-				pause = true;
-				if (Confirm(L"Exit")) {
-					window.close();
-					break;
-				}
-				else {
-					pause = false;
-					clock.restart();
-				}
+				window.close();
 			}
 		}
 
@@ -201,9 +211,11 @@ int main() {
 		case GameState::STATE_MENU: {
 			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 
-			startBtn.Update(mousePos);
+			for (auto button : menuBtnList) {
+				button->Update(mousePos);
+				window.draw(*button);
+			}
 
-			window.draw(startBtn);
 		} break;
 		case GameState::STATE_GAME: {
 
