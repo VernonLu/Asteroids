@@ -1,28 +1,28 @@
 #include "Aircraft.h"
-#include <iostream>
+
 void Aircraft::UpdateSpriteSize() {
-	if (aircraft.getTexture() == NULL) { return; }
-	sf::Vector2u texSize = aircraft.getTexture()->getSize();
-	aircraft.setOrigin(texSize.x / 2, texSize.y / 2);
+	if (sprite.getTexture() == NULL) { return; }
+	sf::Vector2u texSize = sprite.getTexture()->getSize();
+	sprite.setOrigin(texSize.x / 2, texSize.y / 2);
 	sf::Vector2f scale(radius / texSize.x, radius / texSize.y);
-	aircraft.setScale(scale);
+	sprite.setScale(scale);
 }
 
 Aircraft::Aircraft() {
-	isDead = false;
+	enable = true;
 	SetRadius(50);
 	SetForce(100);
 	SetHeading(270);
 	SetRotateSpeed(240);
 	velocity = sf::Vector2f(0, 0);
 	thrustSound.setLoop(true);
-	aircraft.setPosition(1, 1);
+	sprite.setPosition(1, 1);
 	boundary = sf::Vector2f(1366, 768);
 
-	for (int i = 0; i < 1000; ++i) {
+	for (int i = 0; i < 50; ++i) {
 		Particle* particle = new Particle();
-		particle->SetLifetime(0.1);
-		particle->SetSpeed(300);
+		particle->SetLifetime(0.2);
+		particle->SetSpeed(400);
 		particle->SetColor(sf::Color::Blue);
 		particle->EnableFade();
 		flame.push_back(particle);
@@ -32,7 +32,8 @@ Aircraft::Aircraft() {
 Aircraft::~Aircraft() {}
 
 void Aircraft::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	target.draw(aircraft);
+	if (!enable) { return; }
+	target.draw(sprite);
 	for (auto particle : flame) {
 		if (particle->isDead) continue;
 		target.draw(*particle);
@@ -51,12 +52,12 @@ float Aircraft::GetRadius() {
 
 void Aircraft::SetPosition(sf::Vector2f position) {
 	this->position = position;
-	aircraft.setPosition(position);
+	sprite.setPosition(position);
 }
 
 void Aircraft::SetPosition(float x, float y) {
 	position = sf::Vector2f(x, y);
-	aircraft.setPosition(position);
+	sprite.setPosition(position);
 }
 
 sf::Vector2f Aircraft::GetPosition() {
@@ -66,7 +67,7 @@ sf::Vector2f Aircraft::GetPosition() {
 
 void Aircraft::SetHeading(float angle) {
 	headingAngle = angle;
-	aircraft.setRotation(headingAngle);
+	sprite.setRotation(headingAngle);
 }
 
 float Aircraft::GetHeading() {
@@ -91,7 +92,7 @@ float Aircraft::GetRotateSpeed() {
 
 void Aircraft::SetTexture(sf::Texture& texture) {
 	texture.generateMipmap();
-	aircraft.setTexture(texture);
+	sprite.setTexture(texture);
 	UpdateSpriteSize();
 }
 
@@ -117,35 +118,37 @@ sf::Vector2f Aircraft::GetBoundary() {
 
 void Aircraft::Move(float dt) {
 	position += velocity * dt;
-	aircraft.move(velocity * dt);
+	sprite.move(velocity * dt);
 
 	if (velocity.x > 0 && position.x > boundary.x + radius * 2) {
 		position.x -= boundary.x + radius * 4;
-		aircraft.setPosition(position);
+		sprite.setPosition(position);
 	}
 	if (velocity.x < 0 && position.x < -radius * 2) {
 		position.x += boundary.x + radius * 4;
-		aircraft.setPosition(position);
+		sprite.setPosition(position);
 	}
 
 	if (velocity.y > 0 && position.y > boundary.y + radius * 2) {
 		position.y = position.y - boundary.y - radius * 4;
-		aircraft.setPosition(position);
+		sprite.setPosition(position);
 		
 	}
 	if (velocity.y < 0 && position.y < -radius * 2) {
 		position.y = position.y + boundary.y + radius * 4;
-		aircraft.setPosition(position);
+		sprite.setPosition(position);
 	}
 }
 
 void Aircraft::Accelerate(float dt) {
-	sf::Vector2f front = sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180));
+	sf::Vector2f front(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180));
+	sf::Vector2f left(sin(headingAngle * 3.14 / 180), cos(headingAngle * 3.14 / 180));
 	velocity += front * force * dt;
 	for (auto particle : flame) {
 		if (particle->isDead) {
 			particle->SetDirection(-front);
-			particle->setPosition(position - front * radius / 2.f);
+			
+			particle->setPosition(position - front * radius / 2.f + left * (float)(rand() % 10 - 5));
 			particle->Enable();
 			break;
 		}
@@ -155,44 +158,43 @@ void Aircraft::Accelerate(float dt) {
 void Aircraft::RotateLeft(float dt) {
 	float rotation = -rotateSpeed * dt;
 
-	aircraft.rotate(rotation);
+	sprite.rotate(rotation);
 
-	headingAngle = aircraft.getRotation();
+	headingAngle = sprite.getRotation();
 }
 
 void Aircraft::RotateRight(float dt) {
 
 	float rotation = rotateSpeed * dt;
 
-	aircraft.rotate(rotation);
+	sprite.rotate(rotation);
 
-	headingAngle = aircraft.getRotation();
+	headingAngle = sprite.getRotation();
 	
 }
 
 void Aircraft::Attack() {
 
 	if (lastShootTime < shootInterval) { return; }
-	
+
 	for (auto bullet : (*bulletPool)) {
-		if (bullet->enabled) { continue; }
+		if (bullet->enable) { continue; }
 		bullet->SetHeading(headingAngle);
-		bullet->SetSpeed(200);
-		bullet->setPosition(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * radius + position);
-		bullet->enabled = true;
+		bullet->sprite.setPosition(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * 20.f + position);
+		bullet->enable = true;
 		break;
 	}
 	lastShootTime = 0;
 }
 
 void Aircraft::Update(float dt) {
+
 	Move(dt);
 
 	for (auto particle : flame) {
 		particle->Update(dt);
 	}
 
-	if (isDead) { return; }
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 		RotateLeft(dt);

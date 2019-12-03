@@ -9,10 +9,12 @@
 #include <iostream>
 #include <vector>
 
+#include "GameObject.h"
 #include "GameState.h"
 #include "Button.h"
 #include "Aircraft.h"
 #include "HealthBar.h"
+#include "Asteroid.h"
 
 
 sf::Vector2f winSize(1366, 768);
@@ -28,11 +30,15 @@ sf::Texture backgroundTex;
 sf::Texture btnTex;
 sf::Texture health;
 sf::Texture healthBg;
+sf::Texture bulletTex;
+sf::Texture asteroidTex;
 
 sf::SoundBuffer bgmBuffer;
 sf::Sound bgm(bgmBuffer);
 
 sf::SoundBuffer thrustBuffer;
+
+sf::Text debug;
 
 std::vector<Button*> menuBtnList;
 Button startBtn;
@@ -46,15 +52,16 @@ bool LoadResources() {
 	if (!btnTex.loadFromFile("resources/Textures/texture_button.png")) { return false; }
 	if (!health.loadFromFile("resources/Textures/heart.png")) { return false; }
 	if (!healthBg.loadFromFile("resources/Textures/heart_bg.png")) { return false; }
-	
+	if (!bulletTex.loadFromFile("resources/Textures/bullet.png")) { return false; }
+	if (!asteroidTex.loadFromFile("resources/Textures/asteroid.png")) { return false; }
+
 	if (!bgmBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
 	if (!thrustBuffer.loadFromFile("resources/Audio/thrust1.wav")) { return false; }
 	return true;
 }
+
 void Setupbackground(){
 	bg.setTexture(backgroundTex);
-
-
 }
 
 void StartGame() {
@@ -72,10 +79,17 @@ void LoadLevel() {
 
 int main() {
 
+	std::vector<GameObject> bucket;
+
+
 	bool gameStart = false;
 	bool loadLevel = false;
 	bool pause = false;
 	state = GameState::STATE_MENU;
+
+	debug.setFont(font);
+	debug.setCharacterSize(40);
+	debug.setPosition(1, 1);
 
 	settings.antialiasingLevel = 8;
 	sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default, settings);
@@ -92,6 +106,7 @@ int main() {
 	std::vector<Bullet*> bulletPool;
 	for (int i = 0; i < 5000; ++i) {
 		Bullet* bullet = new Bullet();
+		bullet->SetTexture(bulletTex);
 		bulletPool.push_back(bullet);
 	}
 
@@ -102,12 +117,14 @@ int main() {
 	player.SetBulletPool(&bulletPool);
 
 	HealthBar healthBar(3);
-
 	healthBar.SetTexture(health);
 	healthBar.SetBgTexture(healthBg);
 	healthBar.SetSize(60, 20);
 	healthBar.SetPosition(1, 1);
 
+
+	Asteroid asteroid;
+	asteroid.SetTexture(asteroidTex);
 
 	sf::Clock clock;
 
@@ -119,6 +136,7 @@ int main() {
 		}
 
 		float deltaTime = clock.restart().asSeconds();
+		debug.setString(std::to_string((int)(1 / deltaTime))); 
 
 		window.clear();
 
@@ -150,15 +168,16 @@ int main() {
 
 			for (auto bullet : bulletPool) {
 
-				sf::Vector2f position = bullet->getPosition();
+				sf::Vector2f position = bullet->position;
 				if (position.x < 0 || position.x > winSize.x || position.y <0 || position.y > winSize.y) {
-					bullet->enabled = false;
+					bullet->enable = false;
 				}
-				if (!bullet->enabled) { continue; }
+				if (!bullet->enable) { continue; }
 				bullet->Update(deltaTime);
 				window.draw(*bullet);
 			}
 
+			window.draw(asteroid);
 			window.draw(healthBar);
 			window.draw(player);
 		} break;
@@ -168,6 +187,7 @@ int main() {
 		default:
 			break;
 		}
+		window.draw(debug);
 		window.display();
 	}
 	return EXIT_SUCCESS;

@@ -1,27 +1,20 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "GameObject.h"
+
 #include <SFML/Audio.hpp>
 #include <vector>
 
 #include "Bullet.h"
 #include "Particle.h"
 
-class Aircraft : public sf::Drawable {
-private:
-	bool isDead;
-
-	sf::Sprite aircraft;
-
-	float radius;
-
-	sf::Vector2f position;
-	
+class Aircraft : public GameObject {
+public:
 	float headingAngle;
-	
+
 	float force;
 
 	sf::Vector2f velocity;
-	
+
 	float rotateSpeed;
 
 	sf::Sound thrustSound;
@@ -38,11 +31,10 @@ private:
 
 	void UpdateSpriteSize();
 
-public:
 	Aircraft();
 	~Aircraft();
 
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	/*Getters and Setters*/
 	void SetRadius(float radius);

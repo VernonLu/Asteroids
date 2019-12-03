@@ -1,15 +1,9 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "GameObject.h"
 #include <SFML/Audio.hpp>
-class Bullet : public sf::CircleShape{
-private:
-
-	float headingAngle;
-
-	float speed;
-
+class Bullet : public GameObject{
 public:
-	bool enabled;
+	float headingAngle;
 
 	Bullet();
 
@@ -22,9 +16,14 @@ public:
 	void SetSpeed(float speed);
 	float GetSpeed();
 
+	void SetTexture(sf::Texture& texture);
+
 	void Move(float dt);
 	
 	void Disable();
 
 	void Update(float dt);
+
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
 };
