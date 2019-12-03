@@ -25,7 +25,9 @@ public:
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	virtual bool Collide(GameObject& other);
+	virtual void Collide(GameObject& other);
+
+	virtual void Destroy();
 	
 	virtual void Update(float dt) = 0;
 };

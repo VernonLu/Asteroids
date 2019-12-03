@@ -21,10 +21,13 @@ sf::Vector2f winSize(1366, 768);
 sf::ContextSettings settings;
 GameState state;
 
+sf::Vector2f btnSize(240, 80);
+
 sf::Font font;
 
 sf::Sprite bg;
 
+/*Texture*/
 sf::Texture aircraftTex;
 sf::Texture backgroundTex;
 sf::Texture btnTex;
@@ -33,20 +36,25 @@ sf::Texture healthBg;
 sf::Texture bulletTex;
 sf::Texture asteroidTex;
 
+/*Sound*/
 sf::SoundBuffer bgmBuffer;
 sf::Sound bgm(bgmBuffer);
 
 sf::SoundBuffer thrustBuffer;
 
+/*Text*/
 sf::Text debug;
 
+/*Button*/
 std::vector<Button*> menuBtnList;
 Button startBtn;
 
 
 bool LoadResources() {
+	//Load font
 	if (!font.loadFromFile("resources/Font/sansation.ttf")) { return false; }
 
+	//Load texture
 	if (!aircraftTex.loadFromFile("resources/Textures/aircraft_player.png")) { return false; }
 	if (!backgroundTex.loadFromFile("resources/Textures/texture_background.jpg")) { return false; }
 	if (!btnTex.loadFromFile("resources/Textures/texture_button.png")) { return false; }
@@ -55,8 +63,10 @@ bool LoadResources() {
 	if (!bulletTex.loadFromFile("resources/Textures/bullet.png")) { return false; }
 	if (!asteroidTex.loadFromFile("resources/Textures/asteroid.png")) { return false; }
 
+	//Load sound
 	if (!bgmBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
 	if (!thrustBuffer.loadFromFile("resources/Audio/thrust1.wav")) { return false; }
+
 	return true;
 }
 
@@ -67,6 +77,7 @@ void Setupbackground(){
 void StartGame() {
 	state = GameState::STATE_GAME;
 }
+
 
 void Start() {
 	bgm.play();
@@ -79,7 +90,7 @@ void LoadLevel() {
 
 int main() {
 
-	std::vector<GameObject> bucket;
+	std::vector<GameObject*> bucket;
 
 
 	bool gameStart = false;
@@ -92,8 +103,22 @@ int main() {
 	debug.setPosition(1, 1);
 
 	settings.antialiasingLevel = 8;
+	
 	sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default, settings);
+	
 	if (!LoadResources()) { return EXIT_FAILURE; }
+
+	std::vector<Asteroid*> largeAsteroid;
+	for (int i = 0; i < 10; ++i) {
+		Asteroid* a = new Asteroid();
+		a->SetTexture(asteroidTex);
+		a->SetPosition(sf::Vector2f(rand() % 1366, (rand() % 768)));
+		a->SetDirection(773 - a->position.x + (rand() % 10 - 5)* 10, 384 - a->position.y + (rand() % 10 - 5) * 10);
+		a->speed = rand() % 20 + 100;
+		a->boundary = winSize;
+		a->rotateSpeed = (rand() % 10 + 30);
+		largeAsteroid.push_back(a);
+	}
 
 	bg.setTexture(backgroundTex);
 	
@@ -123,8 +148,6 @@ int main() {
 	healthBar.SetPosition(1, 1);
 
 
-	Asteroid asteroid;
-	asteroid.SetTexture(asteroidTex);
 
 	sf::Clock clock;
 
@@ -166,6 +189,21 @@ int main() {
 
 			window.draw(bg);
 
+			for (auto asteroid : largeAsteroid) {
+				asteroid->Update(deltaTime);
+				window.draw(*asteroid);
+			}
+			for (int i = 0; i < largeAsteroid.size(); ++i) {
+				for (int j = i + 1; j < largeAsteroid.size(); ++j) {
+					sf::Vector2f diff = largeAsteroid[i]->position - largeAsteroid[j]->position;
+					float r2 = pow((largeAsteroid[i]->radius + largeAsteroid[j]->radius), 2);
+					if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
+						largeAsteroid[i]->Collide(*largeAsteroid[j]);
+						largeAsteroid[j]->Collide(*largeAsteroid[i]);
+					}
+				}
+			}
+
 			for (auto bullet : bulletPool) {
 
 				sf::Vector2f position = bullet->position;
@@ -177,7 +215,7 @@ int main() {
 				window.draw(*bullet);
 			}
 
-			window.draw(asteroid);
+
 			window.draw(healthBar);
 			window.draw(player);
 		} break;

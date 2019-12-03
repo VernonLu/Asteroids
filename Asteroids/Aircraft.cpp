@@ -4,14 +4,14 @@ void Aircraft::UpdateSpriteSize() {
 	if (sprite.getTexture() == NULL) { return; }
 	sf::Vector2u texSize = sprite.getTexture()->getSize();
 	sprite.setOrigin(texSize.x / 2, texSize.y / 2);
-	sf::Vector2f scale(radius / texSize.x, radius / texSize.y);
+	sf::Vector2f scale(radius / texSize.x * 2, radius / texSize.y * 2);
 	sprite.setScale(scale);
 }
 
 Aircraft::Aircraft() {
 	enable = true;
 	SetRadius(50);
-	SetForce(100);
+	SetForce(300);
 	SetHeading(270);
 	SetRotateSpeed(240);
 	velocity = sf::Vector2f(0, 0);
@@ -19,7 +19,7 @@ Aircraft::Aircraft() {
 	sprite.setPosition(1, 1);
 	boundary = sf::Vector2f(1366, 768);
 
-	for (int i = 0; i < 50; ++i) {
+	for (int i = 0; i < 100; ++i) {
 		Particle* particle = new Particle();
 		particle->SetLifetime(0.2);
 		particle->SetSpeed(400);
@@ -91,7 +91,6 @@ float Aircraft::GetRotateSpeed() {
 }
 
 void Aircraft::SetTexture(sf::Texture& texture) {
-	texture.generateMipmap();
 	sprite.setTexture(texture);
 	UpdateSpriteSize();
 }
@@ -148,7 +147,7 @@ void Aircraft::Accelerate(float dt) {
 		if (particle->isDead) {
 			particle->SetDirection(-front);
 			
-			particle->setPosition(position - front * radius / 2.f + left * (float)(rand() % 10 - 5));
+			particle->setPosition(position - front * radius  + left * (float)(rand() % 10 - 5));
 			particle->Enable();
 			break;
 		}

@@ -30,7 +30,7 @@ float Bullet::GetSpeed() {
 void Bullet::SetTexture(sf::Texture& texture) {
 	sprite.setTexture(texture);
 	sf::Vector2u texSize = texture.getSize();
-	sprite.setScale(radius / texSize.x, radius / texSize.y);
+	sprite.setScale(radius / texSize.x * 2, radius / texSize.y * 2);
 	sprite.setOrigin(radius, radius);
 }
 

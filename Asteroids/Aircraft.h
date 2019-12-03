@@ -7,6 +7,7 @@
 #include "Bullet.h"
 #include "Particle.h"
 
+
 class Aircraft : public GameObject {
 public:
 	float headingAngle;
