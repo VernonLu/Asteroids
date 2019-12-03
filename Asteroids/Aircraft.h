@@ -4,10 +4,11 @@
 #include <vector>
 
 #include "Bullet.h"
+#include "Particle.h"
 
 class Aircraft : public sf::Drawable {
 private:
-	bool destroied;
+	bool isDead;
 
 	sf::Sprite aircraft;
 
@@ -25,16 +26,15 @@ private:
 
 	sf::Sound thrustSound;
 
-	sf::Sprite flame;
-
 	std::vector<Bullet*>* bulletPool;
 
 	float shootInterval = 0.2f;
 
 	float lastShootTime = 0;
 
-
 	sf::Vector2f boundary;
+
+	std::vector<Particle*> flame;
 
 	void UpdateSpriteSize();
 
@@ -62,8 +62,6 @@ public:
 	float GetRotateSpeed();
 
 	void SetTexture(sf::Texture& texture);
-
-	void SetFlameTexture(sf::Texture& texture);
 
 	void SetThrustSound(sf::SoundBuffer& sound);
 

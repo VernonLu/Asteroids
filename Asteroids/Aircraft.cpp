@@ -9,7 +9,7 @@ void Aircraft::UpdateSpriteSize() {
 }
 
 Aircraft::Aircraft() {
-	destroied = false;
+	isDead = false;
 	SetRadius(50);
 	SetForce(100);
 	SetHeading(270);
@@ -18,12 +18,25 @@ Aircraft::Aircraft() {
 	thrustSound.setLoop(true);
 	aircraft.setPosition(1, 1);
 	boundary = sf::Vector2f(1366, 768);
+
+	for (int i = 0; i < 1000; ++i) {
+		Particle* particle = new Particle();
+		particle->SetLifetime(0.1);
+		particle->SetSpeed(300);
+		particle->SetColor(sf::Color::Blue);
+		particle->EnableFade();
+		flame.push_back(particle);
+	}
 }
 
 Aircraft::~Aircraft() {}
 
 void Aircraft::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(aircraft);
+	for (auto particle : flame) {
+		if (particle->isDead) continue;
+		target.draw(*particle);
+	}
 }
 
 void Aircraft::SetRadius(float radius) {
@@ -82,10 +95,6 @@ void Aircraft::SetTexture(sf::Texture& texture) {
 	UpdateSpriteSize();
 }
 
-void Aircraft::SetFlameTexture(sf::Texture& texture) {
-	flame.setTexture(texture);
-}
-
 void Aircraft::SetThrustSound(sf::SoundBuffer& sound) {
 	thrustSound.setBuffer(sound);
 }
@@ -131,7 +140,16 @@ void Aircraft::Move(float dt) {
 }
 
 void Aircraft::Accelerate(float dt) {
-	velocity += sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * force * dt;
+	sf::Vector2f front = sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180));
+	velocity += front * force * dt;
+	for (auto particle : flame) {
+		if (particle->isDead) {
+			particle->SetDirection(-front);
+			particle->setPosition(position - front * radius / 2.f);
+			particle->Enable();
+			break;
+		}
+	}
 }
 
 void Aircraft::RotateLeft(float dt) {
@@ -170,8 +188,11 @@ void Aircraft::Attack() {
 void Aircraft::Update(float dt) {
 	Move(dt);
 
+	for (auto particle : flame) {
+		particle->Update(dt);
+	}
 
-	if (destroied) { return; }
+	if (isDead) { return; }
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 		RotateLeft(dt);
