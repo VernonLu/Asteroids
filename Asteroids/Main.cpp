@@ -111,6 +111,9 @@ void Exit() {
 		pause = false;
 	}
 }
+void Return2Menu() {
+	state = GameState::STATE_MENU;
+}
 
 void Init() {
 
@@ -145,6 +148,11 @@ void Init() {
 	ingameScore.setFont(font);
 	ingameScore.setCharacterSize(40);
 	ingameScore.setPosition(10, 80);
+
+
+	endGameScore.setFont(font);
+	endGameScore.setCharacterSize(80);
+	endGameScore.setPosition(10, 80);
 
 
 	player.SetTexture(aircraftTex);
@@ -198,6 +206,28 @@ int main() {
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
 				window.close();
+			}
+			if (event.type == sf::Event::KeyPressed) {
+				switch (state)
+				{
+				case GameState::STATE_MENU: break;
+				case GameState::STATE_GAME: {
+					if (event.key.code == sf::Keyboard::Escape) {
+						pause = true;
+						if (Confirm(L"Quit Game?")) {
+							Return2Menu();
+						}
+						else {
+
+						}
+						pause = false;
+					}
+				} break;
+				case GameState::STATE_OVER: {
+
+				} break;
+				default: break;
+				}
 			}
 		}
 
