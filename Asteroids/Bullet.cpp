@@ -1,6 +1,7 @@
 #include "Bullet.h"
 
 Bullet::Bullet() {
+	tag = TYPE::Bullet;
 	enable = false;
 	headingAngle = 0;
 	speed = 500;

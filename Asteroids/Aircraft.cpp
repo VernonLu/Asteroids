@@ -9,6 +9,7 @@ void Aircraft::UpdateSpriteSize() {
 }
 
 Aircraft::Aircraft() {
+	tag = TYPE::Aircraft;
 	enable = true;
 	SetRadius(30);
 	SetForce(300);

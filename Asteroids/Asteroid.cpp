@@ -1,6 +1,7 @@
 #include "Asteroid.h"
 
 Asteroid::Asteroid() {
+	tag = TYPE::Asteroid;
 	radius = 30;
 	enable = true;
 }
@@ -69,16 +70,23 @@ void Asteroid::Update(float dt) {
 }
 
 void Asteroid::Collide(GameObject& other) {
-	sf::Vector2f force = position - other.position;
-	direction = (force + direction * speed) / (speed + radius) ;
+	switch (other.tag) {
+	case TYPE::Asteroid: {
+		sf::Vector2f force = position - other.position;
+		direction = (force + direction * speed) / (speed + radius);
+	} break;
+	case TYPE::Bullet: {
+		Destroy();
+	} break;
+	default:
+		break;
+	}
 }
 
 void Asteroid::Destroy() {
-	if (life > 0) {
-		for (int i = 0; i < 2; ++i) {
-			Asteroid* a = new Asteroid();
-			container->push_back(a);
-		}
-	}
 	enable = false;
+	for (int i = 0; i < 2; ++i) {
+		Asteroid* a = new Asteroid();
+		container->push_back(a);
+	}
 }

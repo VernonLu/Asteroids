@@ -152,6 +152,7 @@ void Init() {
 
 	endGameScore.setFont(font);
 	endGameScore.setCharacterSize(80);
+	
 	endGameScore.setPosition(10, 80);
 
 

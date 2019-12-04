@@ -1,6 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
+enum class TYPE {
+	Aircraft,
+	Bullet,
+	Asteroid
+};
+
 
 class GameObject : public sf::Drawable {
 protected:
@@ -9,7 +15,7 @@ public:
 
 	bool enable;
 
-	std::string tag;
+	TYPE tag;
 
 	float radius;
 

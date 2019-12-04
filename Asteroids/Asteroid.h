@@ -5,6 +5,7 @@ class Asteroid : public GameObject {
 public:
 
 	int life;
+
 	sf::Vector2f boundary;
 
 	float rotateSpeed;
