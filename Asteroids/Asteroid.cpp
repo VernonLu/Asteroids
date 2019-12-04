@@ -23,13 +23,6 @@ void Asteroid::SetDirection(float x, float y) {
 	direction = sf::Vector2f(x / len, y / len);
 }
 
-void Asteroid::SetTexture(sf::Texture& texture) {
-	sf::Vector2u texSize = texture.getSize();
-	sprite.setTexture(texture);
-	sprite.setScale(radius / texSize.x * 2, radius / texSize.y * 2);
-	sprite.setOrigin(radius, radius);
-}
-
 void Asteroid::Move(float dt) {
 	
 	sf::Vector2f velocity = direction * speed * dt;
@@ -85,8 +78,11 @@ void Asteroid::Collide(GameObject& other) {
 
 void Asteroid::Destroy() {
 	enable = false;
+
+	/*
 	for (int i = 0; i < 2; ++i) {
 		Asteroid* a = new Asteroid();
 		container->push_back(a);
 	}
+	*/
 }

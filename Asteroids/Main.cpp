@@ -17,9 +17,13 @@
 #include "Asteroid.h"
 #include "Score.h"
 
+
+typedef std::shared_ptr<GameObject> GameObjectPtr;
+
 /*Window*/
 sf::Vector2f winSize(1366, 768);
 sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default);
+
 
 /*GameState*/
 GameState state;
@@ -156,6 +160,13 @@ void Init() {
 	endGameScore.setPosition(10, 80);
 
 
+	for (int i = 0; i < 5000; ++i) {
+		Bullet* bullet = new Bullet();
+		bullet->SetTexture(bulletTex);
+		bullet->boundary = winSize;
+		bulletPool.push_back(bullet);
+	}
+
 	player.SetTexture(aircraftTex);
 	player.SetThrustSound(thrustBuffer);
 	player.SetBulletPool(&bulletPool);
@@ -181,20 +192,12 @@ void LoadLevel(int index) {
 }
 
 void SpawnPlayer() {
-
-	for (int i = 0; i < 5000; ++i) {
-		Bullet* bullet = new Bullet();
-		bullet->SetTexture(bulletTex);
-		bulletPool.push_back(bullet);
-	}
-
 	player.SetPosition(winSize / 2.f);
 }
 
 int main() {
 
 	state = GameState::STATE_MENU;
-
 	
 	if (!LoadResources()) { return EXIT_FAILURE; }
 
@@ -257,7 +260,16 @@ int main() {
 				loadLevel = false;
 			}
 			if (!loadLevel) {
+				LoadLevel(0);
 				loadLevel = true;
+				respawn = true;
+
+			}
+
+			if (respawn) {
+				player.SetPosition(winSize / 2.f);
+				player.enable = true;
+				respawn = false;
 			}
 
 			/*Update*/
@@ -278,6 +290,8 @@ int main() {
 				}
 				/*Collision Detection*/
 				for (int i = 0; i < asteroidPool.size(); ++i) {
+					if (!asteroidPool[i]->enable) { continue; }
+					//Collide with other asteroid
 					for (int j = i + 1; j < asteroidPool.size(); ++j) {
 						sf::Vector2f diff = asteroidPool[i]->position - asteroidPool[j]->position;
 						float r2 = pow((asteroidPool[i]->radius + asteroidPool[j]->radius), 2);
@@ -286,11 +300,33 @@ int main() {
 							asteroidPool[j]->Collide(*asteroidPool[i]);
 						}
 					}
+					//Collide with bullet
+					for (auto bullet : bulletPool) {
+						if (bullet->enable) {
+							sf::Vector2f diff = asteroidPool[i]->position - bullet->position;
+							float r2 = pow((asteroidPool[i]->radius + bullet->radius), 2);
+							if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
+								asteroidPool[i]->enable = false;
+
+								//asteroidPool[i]->Collide(*bullet);
+								bullet->Collide(*asteroidPool[i]);
+							}
+						}
+					}
+
+					sf::Vector2f diff = asteroidPool[i]->position - player.position;
+					float r2 = pow((asteroidPool[i]->radius + player.radius), 2);
+					if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
+						asteroidPool[i]->Collide(player);
+						//player.Collide(*asteroidPool[i]);
+					}
+
+
 				}
 
 				if (player.enable == false) {
-					healthBar.DecreaseHealth();
-					respawn = true;
+					//healthBar.DecreaseHealth();
+					//respawn = true;
 				}
 			}
 

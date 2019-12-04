@@ -5,8 +5,7 @@ Bullet::Bullet() {
 	enable = false;
 	headingAngle = 0;
 	speed = 500;
-	radius = 16;
-	color = sf::Color::Yellow;
+	radius = 10;
 	sprite.setPosition(-10, -10);
 }
 
@@ -28,29 +27,42 @@ float Bullet::GetSpeed() {
 	return speed;
 }
 
-void Bullet::SetTexture(sf::Texture& texture) {
-	sprite.setTexture(texture);
-	sf::Vector2u texSize = texture.getSize();
-	sprite.setScale(radius / texSize.x * 2, radius / texSize.y * 2);
-	sprite.setOrigin(radius, radius);
+void Bullet::SetPosition(sf::Vector2f position) {
+	this->position = position;
+	sprite.setPosition(position);
 }
 
+void Bullet::SetPosition(float x, float y) {
+	position = sf::Vector2f(x, y);
+	sprite.setPosition(position);
+}
 
 void Bullet::Move(float dt) {
-	sprite.move(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * speed * dt);
+	sf::Vector2f velocity = sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * speed * dt;
+	position += velocity;
+	sprite.move(velocity);
 }
 
 void Bullet::Disable() {
 	enable = false;
-	position = sf::Vector2f(-99, -99);
 }
 
 void Bullet::Update(float dt) {
 	Move(dt);
+	if (position.x < -radius * 2 ||
+		position.x > boundary.x + radius * 2 ||
+		position.y < -radius * 2 ||
+		position.y > boundary.y + radius * 2) {
+		enable = false;
+	}
 }
 
 void Bullet::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(sprite);
+}
+
+void Bullet::Collide(GameObject& other) {
+	enable = false;
 }
 
 

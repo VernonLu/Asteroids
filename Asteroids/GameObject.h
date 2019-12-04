@@ -1,18 +1,18 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
+#include <memory>
 enum class TYPE {
 	Aircraft,
 	Bullet,
 	Asteroid
 };
 
-
 class GameObject : public sf::Drawable {
 protected:
 
 public:
-
 	bool enable;
 
 	TYPE tag;
@@ -30,6 +30,8 @@ public:
 	float speed;
 
 	sf::Color color;
+
+	virtual void SetTexture(sf::Texture& texture);
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

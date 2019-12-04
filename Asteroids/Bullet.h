@@ -5,6 +5,8 @@ class Bullet : public GameObject{
 public:
 	float headingAngle;
 
+	sf::Vector2f boundary;
+
 	Bullet();
 
 	~Bullet();
@@ -16,7 +18,8 @@ public:
 	void SetSpeed(float speed);
 	float GetSpeed();
 
-	void SetTexture(sf::Texture& texture);
+	void SetPosition(sf::Vector2f position);
+	void SetPosition(float x, float y);
 
 	void Move(float dt);
 	
@@ -26,4 +29,5 @@ public:
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+	void Collide(GameObject& other);
 };

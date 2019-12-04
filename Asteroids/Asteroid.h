@@ -19,8 +19,6 @@ public:
 
 	void SetDirection(float x, float y);
 
-	void SetTexture(sf::Texture& texture);
-
 	void Move(float dt);
 
 	void Rotate(float dt);

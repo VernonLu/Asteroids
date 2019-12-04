@@ -24,7 +24,7 @@ Aircraft::Aircraft() {
 		Particle* particle = new Particle();
 		particle->SetLifetime(0.2);
 		particle->SetSpeed(400);
-		particle->SetColor(sf::Color::Blue);
+		particle->SetColor(sf::Color(255, 139, 2));
 		particle->EnableFade();
 		flame.push_back(particle);
 	}
@@ -91,10 +91,6 @@ float Aircraft::GetRotateSpeed() {
 	return rotateSpeed;
 }
 
-void Aircraft::SetTexture(sf::Texture& texture) {
-	sprite.setTexture(texture);
-	UpdateSpriteSize();
-}
 
 void Aircraft::SetThrustSound(sf::SoundBuffer& sound) {
 	thrustSound.setBuffer(sound);
@@ -142,12 +138,11 @@ void Aircraft::Move(float dt) {
 
 void Aircraft::Accelerate(float dt) {
 	sf::Vector2f front(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180));
-	sf::Vector2f left(sin(headingAngle * 3.14 / 180), cos(headingAngle * 3.14 / 180));
+	sf::Vector2f left(cos((headingAngle + 90) * 3.14 / 180), sin((headingAngle + 90) * 3.14 / 180));
 	velocity += front * force * dt;
 	for (auto particle : flame) {
 		if (particle->isDead) {
 			particle->SetDirection(-front);
-			
 			particle->setPosition(position - front * radius  + left * (float)(rand() % 10 - 5));
 			particle->Enable();
 			break;
@@ -180,7 +175,7 @@ void Aircraft::Attack() {
 	for (auto bullet : (*bulletPool)) {
 		if (bullet->enable) { continue; }
 		bullet->SetHeading(headingAngle);
-		bullet->sprite.setPosition(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * 20.f + position);
+		bullet->SetPosition(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * 20.f + position);
 		bullet->enable = true;
 		break;
 	}
@@ -217,5 +212,11 @@ void Aircraft::Update(float dt) {
 		Attack();
 	}
 
+}
+
+void Aircraft::Collide(GameObject& other) {
+	if (other.tag == TYPE::Asteroid) {
+		enable = false;
+	}
 }
 

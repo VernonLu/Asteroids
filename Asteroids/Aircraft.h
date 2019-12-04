@@ -54,8 +54,6 @@ public:
 	void SetRotateSpeed(float angle);
 	float GetRotateSpeed();
 
-	void SetTexture(sf::Texture& texture);
-
 	void SetThrustSound(sf::SoundBuffer& sound);
 
 	void SetBulletPool(std::vector<Bullet*>* bulletPool);
@@ -76,4 +74,6 @@ public:
 	void Attack();
 
 	void Update(float dt);
+
+	void Collide(GameObject& other);
 };
