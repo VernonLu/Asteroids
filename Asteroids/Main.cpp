@@ -201,10 +201,10 @@ void Init() {
 
 
 	PowerUp* healthUp = new PowerUp(TAG::HealthPowerUp);
-	shieldUp->SetTexture(healthTex);
-	shieldUp->SetSoundBuffer(powerUpBuffer);
-	powerUpPool.push_back(shieldUp);
-	objectPool.push_back(shieldUp);
+	healthUp->SetTexture(healthTex);
+	healthUp->SetSoundBuffer(powerUpBuffer);
+	powerUpPool.push_back(healthUp);
+	objectPool.push_back(healthUp);
 
 	for (int i = 0; i < 100; i++) {
 		Asteroid* a = new Asteroid();
@@ -242,6 +242,7 @@ void SpawnPlayer() {
 }
 
 int main() {
+	srand(time(NULL));
 	int currentLevel = 0;
 	state = GameState::STATE_MENU;
 	
@@ -405,7 +406,7 @@ int main() {
 								sf::Vector2f diff = bucket[i][j][a]->position - bucket[i][j][b]->position;
 								float r2 = pow((bucket[i][j][a]->radius + bucket[i][j][b]->radius), 2);
 								if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
-									if (bucket[i][j][a]->tag == TAG::HealthPowerUp && bucket[i][j][a]->tag == TAG::Aircraft) {
+									if ((bucket[i][j][b]->tag == TAG::HealthPowerUp && bucket[i][j][a]->tag == TAG::Aircraft)) {
 										healthBar.IncreaseHealth();
 									}
 									bucket[i][j][a]->Collide(*bucket[i][j][b]);

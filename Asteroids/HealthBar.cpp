@@ -66,7 +66,7 @@ void HealthBar::SetBgTexture(sf::Texture& texture) {
 
 void HealthBar::IncreaseHealth(int value) {
 	curHealth += value;
-	curHealth = curHealth > maxHealth ? maxHealth : curHealth;
+	curHealth = curHealth >= maxHealth ? maxHealth : curHealth;
 	UpdateHealth();
 }
 

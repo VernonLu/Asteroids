@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "PowerUp.h"
+#include <random>
 
 class Asteroid : public GameObject {
 public:
@@ -17,7 +18,7 @@ public:
 	int* playerScore;
 
 	sf::Sound sound;
-
+	
 	Asteroid(int life = 3);
 	~Asteroid();
 
