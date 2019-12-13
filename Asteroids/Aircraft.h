@@ -41,6 +41,12 @@ public:
 
 	std::vector<Particle*> flame;
 
+	//Shield
+	bool isShieldActive = false;
+	sf::Sprite shieldSprite;
+	sf::Texture shieldTexture;
+	void SetShieldTexture(sf::Texture& texture);
+
 	void UpdateSpriteSize();
 
 	Aircraft();

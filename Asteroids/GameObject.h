@@ -4,10 +4,12 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-enum class TYPE {
+enum class TAG {
 	Aircraft,
 	Bullet,
-	Asteroid
+	Asteroid,
+	HealthPowerUp,
+	ShieldPowerUp
 };
 
 class GameObject : public sf::Drawable {
@@ -16,7 +18,7 @@ protected:
 public:
 	bool enable;
 
-	TYPE tag;
+	TAG tag;
 
 	float radius;
 

@@ -15,6 +15,7 @@
 #include "Button.h"
 #include "Aircraft.h"
 #include "HealthBar.h"
+#include "PowerUp.h"
 #include "Asteroid.h"
 #include "Score.h"
 
@@ -34,10 +35,11 @@ bool pause = false;
 sf::Texture aircraftTex;
 sf::Texture backgroundTex;
 sf::Texture btnTex;
-sf::Texture health;
+sf::Texture healthTex;
 sf::Texture healthBg;
 sf::Texture bulletTex;
 sf::Texture asteroidTex;
+sf::Texture shieldTex;
 
 /*Sound*/
 sf::SoundBuffer bgmBuffer;
@@ -47,6 +49,7 @@ sf::SoundBuffer thrustBuffer;
 sf::SoundBuffer asteroidBuffer;
 sf::SoundBuffer bulletBuffer;
 sf::SoundBuffer playerExplosionBuffer;
+sf::SoundBuffer powerUpBuffer;
 
 /*UI*/
 //Font
@@ -73,6 +76,7 @@ HealthBar healthBar(3);
 Aircraft* player = new Aircraft();
 std::vector<Bullet*> bulletPool;
 std::vector<Asteroid*> asteroidPool;
+std::vector<PowerUp*> powerUpPool;
 std::vector<GameObject*> objectPool;
 std::vector<GameObject*> bucket[4][3];
 //std::vector<std::vector<std::vector<GameObject*>>> bucket;
@@ -84,10 +88,11 @@ bool LoadResources() {
 	if (!aircraftTex.loadFromFile("resources/Textures/aircraft_player.png")) { return false; }
 	if (!backgroundTex.loadFromFile("resources/Textures/texture_background.jpg")) { return false; }
 	if (!btnTex.loadFromFile("resources/Textures/button.png")) { return false; }
-	if (!health.loadFromFile("resources/Textures/heart.png")) { return false; }
+	if (!healthTex.loadFromFile("resources/Textures/heart.png")) { return false; }
 	if (!healthBg.loadFromFile("resources/Textures/heart_bg.png")) { return false; }
 	if (!bulletTex.loadFromFile("resources/Textures/bullet.png")) { return false; }
 	if (!asteroidTex.loadFromFile("resources/Textures/asteroid.png")) { return false; }
+	if (!shieldTex.loadFromFile("resources/Textures/shield.png")) { return false; }
 
 	//Load sound
 	if (!bgmBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
@@ -95,6 +100,7 @@ bool LoadResources() {
 	if (!asteroidBuffer.loadFromFile("resources/Audio/explosion_asteroid.wav")) { return false; }
 	if (!bulletBuffer.loadFromFile("resources/Audio/weapon_player.wav")) { return false; }
 	if (!playerExplosionBuffer.loadFromFile("resources/Audio/explosion_player.wav")) { return false; }
+	if (!powerUpBuffer.loadFromFile("resources/Audio/power_up.wav")) { return false; }
 
 	return true;
 }
@@ -151,7 +157,7 @@ void Init() {
 	menuBtnList.push_back(&exitBtn);
 
 
-	healthBar.SetTexture(health);
+	healthBar.SetTexture(healthTex);
 	healthBar.SetBgTexture(healthBg);
 	healthBar.SetSize(90, 30);
 	healthBar.SetPosition(40, 10);
@@ -179,11 +185,19 @@ void Init() {
 	}
 
 	player->SetTexture(aircraftTex);
+	player->SetShieldTexture(shieldTex);
 	player->SetThrustSound(thrustBuffer);
 	player->SetBulletPool(&bulletPool);
 	player->SetBulletSound(bulletBuffer);
 	player->SetExplosionSound(playerExplosionBuffer);
 	objectPool.push_back(player);
+	
+
+	PowerUp* shieldUp = new PowerUp(TAG::ShieldPowerUp);
+	shieldUp->SetTexture(shieldTex);
+	shieldUp->SetSoundBuffer(powerUpBuffer);
+	powerUpPool.push_back(shieldUp);
+	objectPool.push_back(shieldUp);
 
 	for (int i = 0; i < 100; i++) {
 		Asteroid* a = new Asteroid();
@@ -194,6 +208,7 @@ void Init() {
 		a->boundary = winSize;
 		a->rotateSpeed = (rand() % 10 + 30);
 		a->container = &asteroidPool;
+		a->powerUpContainer = &powerUpPool;
 		a->enable = false;
 		a->playerScore = &score;
 		a->SetBuffer(asteroidBuffer);

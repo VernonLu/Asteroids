@@ -1,5 +1,12 @@
 #include "Aircraft.h"
 
+void Aircraft::SetShieldTexture(sf::Texture& texture) {
+	shieldSprite.setTexture(texture);
+	sf::Vector2u texSize = texture.getSize();
+	shieldSprite.setOrigin(texSize.x / 2, texSize.y / 2);
+	shieldSprite.setScale((radius+5) / texSize.x * 2, (radius+5) / texSize.y * 2);
+}
+
 void Aircraft::UpdateSpriteSize() {
 	if (sprite.getTexture() == NULL) { return; }
 	sf::Vector2u texSize = sprite.getTexture()->getSize();
@@ -9,7 +16,7 @@ void Aircraft::UpdateSpriteSize() {
 }
 
 Aircraft::Aircraft() {
-	tag = TYPE::Aircraft;
+	tag = TAG::Aircraft;
 	enable = true;
 	SetRadius(30);
 	SetForce(100);
@@ -39,6 +46,9 @@ void Aircraft::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	for (auto particle : flame) {
 		if (particle->isDead) continue;
 		target.draw(*particle);
+	}
+	if (isShieldActive) {
+		target.draw(shieldSprite);
 	}
 }
 
@@ -239,14 +249,33 @@ void Aircraft::Update(float dt) {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		Attack();
 	}
+	if (isShieldActive) {
+		shieldSprite.setPosition(position);
+	}
 
 }
 
 void Aircraft::Collide(GameObject& other) {
-	if (invincibleTimeLeft > 0) { return; }
-	if (other.tag == TYPE::Asteroid) {
+	switch (other.tag) {
+	case TAG::Asteroid: {
+		if (invincibleTimeLeft > 0) { return; }
+		if (isShieldActive) {
+			isShieldActive = false;
+			sf::Vector2f diff = position - other.position;
+			float len = sqrt(pow(diff.x, 2) + pow(diff.y, 2));
+			direction = diff / len;
+			//SetPosition(position + (direction * radius));
+			velocity = -velocity;
+			return;
+		}
 		explosionSound.play();
 		enable = false;
+	} break;
+	case TAG::ShieldPowerUp: {
+		isShieldActive = true;
+	} break;
+	default:
+		break;
 	}
 }
 

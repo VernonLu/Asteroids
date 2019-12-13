@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "PowerUp.h"
 
 class Asteroid : public GameObject {
 public:
@@ -11,6 +12,7 @@ public:
 	float rotateSpeed;
 
 	std::vector<Asteroid*>* container;
+	std::vector<PowerUp*>* powerUpContainer;
 
 	int* playerScore;
 

@@ -1,7 +1,7 @@
 #include "Bullet.h"
 
 Bullet::Bullet() {
-	tag = TYPE::Bullet;
+	tag = TAG::Bullet;
 	enable = false;
 	headingAngle = 0;
 	speed = 1000;
@@ -63,7 +63,7 @@ void Bullet::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 void Bullet::Collide(GameObject& other) {
-	if (other.tag != TYPE::Asteroid) { return; }
+	if (other.tag != TAG::Asteroid) { return; }
 	enable = false;
 }
 
