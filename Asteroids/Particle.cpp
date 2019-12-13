@@ -30,7 +30,10 @@ void Particle::Update(float dt) {
 	move(direction * speed * dt);
 	if (fade) {
 		sf::Color newColor = color;
-		newColor.a = (time > 0) ? (sf::Uint8)(time / lifeTime * color.a) : 0;
+		//newColor.r = (time > 0) ? (sf::Uint8)(time/ lifeTime * color.r) : 0;
+		newColor.g = (time > 0) ? (sf::Uint8)((lifeTime - time) / time  * color.g) : 0;
+		newColor.b = (time > 0) ? (sf::Uint8)(lifeTime / time * color.b) : 0;
+		//newColor.a = (time > 0) ? (sf::Uint8)(time / lifeTime * color.a) : 0;
 		setFillColor(newColor);
 	}
 	if (time <= 0) { isDead = true; }

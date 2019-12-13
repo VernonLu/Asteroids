@@ -31,7 +31,7 @@ Aircraft::Aircraft() {
 		Particle* particle = new Particle();
 		particle->SetLifetime(0.2);
 		particle->SetSpeed(400);
-		particle->SetColor(sf::Color(255, 139, 2));
+		particle->SetColor(sf::Color(255, 10, 2));
 		particle->EnableFade();
 		flame.push_back(particle);
 	}
