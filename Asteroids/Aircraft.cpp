@@ -27,7 +27,7 @@ Aircraft::Aircraft() {
 	sprite.setPosition(1, 1);
 	boundary = sf::Vector2f(1366, 768);
 
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < 400; ++i) {
 		Particle* particle = new Particle();
 		particle->SetLifetime(0.2);
 		particle->SetSpeed(400);

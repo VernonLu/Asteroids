@@ -239,6 +239,10 @@ void LoadLevel(int index) {
 
 void SpawnPlayer() {
 	player->SetPosition(winSize / 2.f);
+	player->speed = 0;
+	player->velocity = sf::Vector2f(0, 0);
+	player->SetHeading(270);
+	player->Enable();
 }
 
 int main() {
@@ -327,8 +331,7 @@ int main() {
 			}
 
 			if (respawn) {
-				player->SetPosition(winSize / 2.f);
-				player->Enable();
+				SpawnPlayer();
 				respawn = false;
 			}
 
