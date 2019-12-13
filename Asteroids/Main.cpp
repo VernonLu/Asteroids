@@ -316,29 +316,54 @@ int main() {
 					if (object->enable) {
 						object->Update(deltaTime);
 
+						//Put objects to corresponding bucket
 						int xIndex = object->position.x / bucketCellSize.x;
 						int yIndex = object->position.y / bucketCellSize.y;
 
+						bool outLeft = object->position.x - object->radius - xIndex * bucketCellSize.x < 0;
+						bool outRight = object->position.x + object->radius - (xIndex + 1) * bucketCellSize.x > 0;
+
+						bool outTop = object->position.y - object->radius - yIndex * bucketCellSize.y < 0;
+						bool outDown = object->position.y + object->radius - (yIndex + 1) * bucketCellSize.y > 0;
+
 						bucket[xIndex][yIndex].push_back(object);
-						if (object->position.x - object->radius - xIndex * bucketCellSize.x < 0) {
-							if (xIndex > 0)
-								bucket[xIndex - 1][yIndex].push_back(object);
+
+						//Left bucket
+						if (outLeft && xIndex > 0) {
+							bucket[xIndex - 1][yIndex].push_back(object);
 						}
-						if (object->position.x + object->radius - (xIndex + 1) * bucketCellSize.x > 0) {
-							if (xIndex < 4) {
-								bucket[xIndex + 1][yIndex].push_back(object);
-							}
+						//Right bucket
+						if (outRight && xIndex < 4) {
+							bucket[xIndex + 1][yIndex].push_back(object);
 						}
-						if (object->position.y - object->radius - yIndex * bucketCellSize.y < 0) {
-							if (yIndex > 0) {
-								bucket[xIndex][yIndex - 1].push_back(object);
-							}
+						//Top bucket
+						if (outTop && yIndex > 0) {
+							bucket[xIndex][yIndex - 1].push_back(object);
 						}
-						if (object->position.y + object->radius - (yIndex + 1) * bucketCellSize.y > 0) {
-							if (yIndex < 3) {
-								bucket[xIndex][yIndex + 1].push_back(object);
-							}
+						//Down bucket
+						if (outDown && yIndex < 3) {
+							bucket[xIndex][yIndex + 1].push_back(object);
 						}
+
+						//Top left
+						if (outLeft && xIndex > 0 && outTop && yIndex > 0) {
+							bucket[xIndex - 1][yIndex - 1].push_back(object);
+						}
+						//Top Right
+						if (outRight && xIndex < 4 && outTop && yIndex > 0) {
+							bucket[xIndex + 1][yIndex - 1].push_back(object);
+						}
+
+						//Down left
+						if (outLeft && xIndex > 0 && outDown && yIndex < 3) {
+							bucket[xIndex - 1][yIndex + 1].push_back(object);
+						}
+						//Down Right
+						if (outRight && xIndex < 4 && outDown && yIndex < 3) {
+							bucket[xIndex + 1][yIndex + 1].push_back(object);
+						}
+
+
 					}
 				}
 
