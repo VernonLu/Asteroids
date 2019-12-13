@@ -64,7 +64,7 @@ void HealthBar::SetBgTexture(sf::Texture& texture) {
 	bgSprite.setTexture(texture);
 }
 
-void HealthBar::EncreaseHealth(int value) {
+void HealthBar::IncreaseHealth(int value) {
 	curHealth += value;
 	curHealth = curHealth > maxHealth ? maxHealth : curHealth;
 	UpdateHealth();
@@ -75,7 +75,7 @@ void HealthBar::DecreaseHealth(int value) {
 	UpdateHealth();
 }
 
-void HealthBar::EncreaseMaxHealth(int value) {
+void HealthBar::IncreaseMaxHealth(int value) {
 	maxHealth += value;
 	UpdateMaxHealth();
 }

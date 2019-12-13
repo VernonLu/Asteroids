@@ -261,10 +261,6 @@ void Aircraft::Collide(GameObject& other) {
 		if (invincibleTimeLeft > 0) { return; }
 		if (isShieldActive) {
 			isShieldActive = false;
-			sf::Vector2f diff = position - other.position;
-			float len = sqrt(pow(diff.x, 2) + pow(diff.y, 2));
-			direction = diff / len;
-			//SetPosition(position + (direction * radius));
 			velocity = -velocity;
 			return;
 		}

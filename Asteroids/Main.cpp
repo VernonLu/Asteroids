@@ -199,6 +199,13 @@ void Init() {
 	powerUpPool.push_back(shieldUp);
 	objectPool.push_back(shieldUp);
 
+
+	PowerUp* healthUp = new PowerUp(TAG::HealthPowerUp);
+	shieldUp->SetTexture(healthTex);
+	shieldUp->SetSoundBuffer(powerUpBuffer);
+	powerUpPool.push_back(shieldUp);
+	objectPool.push_back(shieldUp);
+
 	for (int i = 0; i < 100; i++) {
 		Asteroid* a = new Asteroid();
 		a->SetTexture(asteroidTex);
@@ -398,6 +405,9 @@ int main() {
 								sf::Vector2f diff = bucket[i][j][a]->position - bucket[i][j][b]->position;
 								float r2 = pow((bucket[i][j][a]->radius + bucket[i][j][b]->radius), 2);
 								if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
+									if (bucket[i][j][a]->tag == TAG::HealthPowerUp && bucket[i][j][a]->tag == TAG::Aircraft) {
+										healthBar.IncreaseHealth();
+									}
 									bucket[i][j][a]->Collide(*bucket[i][j][b]);
 									bucket[i][j][b]->Collide(*bucket[i][j][a]);
 								}
