@@ -18,12 +18,6 @@
 #include "Asteroid.h"
 #include "Score.h"
 
-class Time {
-public:
-	static float deltaTime;
-
-};
-
 
 /*Window*/
 sf::Vector2f winSize(1366, 768);
@@ -138,8 +132,8 @@ void Init() {
 	bg.setTexture(backgroundTex);
 
 	debug.setFont(font);
-	debug.setCharacterSize(40);
-	debug.setPosition(1, 1);
+	debug.setCharacterSize(24);
+	debug.setPosition(1300, 10);
 
 	startBtn.SetSize(sf::Vector2f(240, 80));
 	startBtn.SetTexture(btnTex);
@@ -159,13 +153,13 @@ void Init() {
 
 	healthBar.SetTexture(health);
 	healthBar.SetBgTexture(healthBg);
-	healthBar.SetSize(60, 20);
-	healthBar.SetPosition(1, 1);
+	healthBar.SetSize(90, 30);
+	healthBar.SetPosition(40, 10);
 
 
 	ingameScore.setFont(font);
-	ingameScore.setCharacterSize(40);
-	ingameScore.setPosition(10, 80);
+	ingameScore.setCharacterSize(24);
+	ingameScore.setPosition(200, 10);
 
 
 	endGameScore.setFont(font);
@@ -173,8 +167,8 @@ void Init() {
 	endGameScore.setPosition(10, 80);
 
 	levelText.setFont(font);
-	levelText.setCharacterSize(80);
-	levelText.setPosition(1000, 80);
+	levelText.setCharacterSize(24);
+	levelText.setPosition(400, 10);
 
 	for (int i = 0; i < 200; ++i) {
 		Bullet* bullet = new Bullet();
@@ -236,6 +230,15 @@ int main() {
 
 	sf::Clock clock;
 
+	sf::RenderTexture rt; 
+	if (!rt.create(500, 500)) { return -1; }
+	float t = 1;
+	sf::CircleShape circle;
+	circle.setRadius(10);
+	circle.setPosition(20, 20);
+	circle.setFillColor(sf::Color::Blue);
+	rt.draw(circle);
+
 	while (window.isOpen()) {
 		sf::Event event;
 		while (window.pollEvent(event)) {
@@ -266,9 +269,14 @@ int main() {
 		float deltaTime = clock.restart().asSeconds();
 		debug.setString(std::to_string((int)(1 / deltaTime))); 
 
+
+
 		window.clear();
 
 		window.draw(bg);
+
+
+
 		switch (state) {
 		case GameState::STATE_MENU: {
 			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -289,7 +297,7 @@ int main() {
 			if (!loadLevel) {
 				LoadLevel(currentLevel);
 				++currentLevel;
-				levelText.setString("Level:" + std::to_string(currentLevel));
+				levelText.setString("Level: " + std::to_string(currentLevel));
 				loadLevel = true;
 				respawn = true;
 
@@ -400,7 +408,7 @@ int main() {
 
 			window.draw(healthBar);
 			window.draw(levelText);
-			ingameScore.setString(std::to_string(score));
+			ingameScore.setString("Score: " + std::to_string(score));
 			window.draw(ingameScore);
 
 			/*GameOver*/

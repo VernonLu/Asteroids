@@ -4,7 +4,7 @@ Bullet::Bullet() {
 	tag = TYPE::Bullet;
 	enable = false;
 	headingAngle = 0;
-	speed = 300;
+	speed = 1000;
 	radius = 10;
 	sprite.setPosition(-10, -10);
 }
