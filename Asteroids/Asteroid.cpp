@@ -118,22 +118,15 @@ void Asteroid::Destroy() {
 	}
 	else {
 		int dice = rand() % 10 ;
-		//std::cout << "random num: " << dice;
 		if (dice > 7) {
 
 			int index = rand() % 2;
-			//std::cout << "    index: " << index;
-
-			
 			auto p = (*powerUpContainer)[index];
-
 			if (!p->enable) {
 				p->SetPosition(position);
 				p->enable = true;
 			}
-			
 		}
-		//std::cout << "\n";
 		enable = false;
 	}
 }
