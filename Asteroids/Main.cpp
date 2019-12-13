@@ -290,7 +290,7 @@ int main() {
 		}
 
 		float deltaTime = clock.restart().asSeconds();
-		debug.setString(std::to_string((int)(1 / deltaTime))); 
+		//debug.setString("FPS: "std::to_string((int)(1 / deltaTime))); 
 
 
 
