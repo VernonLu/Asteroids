@@ -256,7 +256,7 @@ int main() {
 					}
 				} break;
 				case GameState::STATE_OVER: {
-					//Return2Menu();
+					Return2Menu();
 				} break;
 				default: break;
 				}
