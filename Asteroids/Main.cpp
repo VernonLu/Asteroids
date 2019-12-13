@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "GameObject.h"
 #include "GameState.h"
@@ -17,13 +18,16 @@
 #include "Asteroid.h"
 #include "Score.h"
 
+class Time {
+public:
+	static float deltaTime;
 
-typedef std::shared_ptr<GameObject> GameObjectPtr;
+};
+
 
 /*Window*/
 sf::Vector2f winSize(1366, 768);
 sf::RenderWindow window(sf::VideoMode(winSize.x, winSize.y), "Asteroids", sf::Style::Default);
-
 
 /*GameState*/
 GameState state;
@@ -57,6 +61,7 @@ sf::Text debug;
 int score;
 sf::Text ingameScore;
 sf::Text endGameScore;
+sf::Text levelText;
 //Button
 sf::Vector2f btnSize(240, 80);
 std::vector<Button*> menuBtnList;
@@ -67,11 +72,13 @@ HealthBar healthBar(3);
 
 /*GameObjects*/
 
-std::vector<GameObject*> bucket;
-Aircraft player;
+
+Aircraft* player = new Aircraft();
 std::vector<Bullet*> bulletPool;
 std::vector<Asteroid*> asteroidPool;
-
+std::vector<GameObject*> objectPool;
+std::vector<GameObject*> bucket[4][3];
+//std::vector<std::vector<std::vector<GameObject*>>> bucket;
 bool LoadResources() {
 	//Load font
 	if (!font.loadFromFile("resources/Font/sansation.ttf")) { return false; }
@@ -121,6 +128,7 @@ void Return2Menu() {
 
 void Init() {
 
+
 	bg.setTexture(backgroundTex);
 
 	debug.setFont(font);
@@ -156,20 +164,39 @@ void Init() {
 
 	endGameScore.setFont(font);
 	endGameScore.setCharacterSize(80);
-	
 	endGameScore.setPosition(10, 80);
 
+	levelText.setFont(font);
+	levelText.setCharacterSize(80);
+	levelText.setPosition(1000, 80);
 
-	for (int i = 0; i < 5000; ++i) {
+	for (int i = 0; i < 200; ++i) {
 		Bullet* bullet = new Bullet();
 		bullet->SetTexture(bulletTex);
 		bullet->boundary = winSize;
 		bulletPool.push_back(bullet);
+		objectPool.push_back(bullet);
 	}
 
-	player.SetTexture(aircraftTex);
-	player.SetThrustSound(thrustBuffer);
-	player.SetBulletPool(&bulletPool);
+	player->SetTexture(aircraftTex);
+	player->SetThrustSound(thrustBuffer);
+	player->SetBulletPool(&bulletPool);
+	objectPool.push_back(player);
+
+	for (int i = 0; i < 100; i++) {
+		Asteroid* a = new Asteroid();
+		a->SetTexture(asteroidTex);
+		a->SetPosition(sf::Vector2f(rand() % 1366, (rand() % 768)));
+		a->SetDirection(rand() % 10, rand() % 10);
+		a->speed = rand() % 20 + 50;
+		a->boundary = winSize;
+		a->rotateSpeed = (rand() % 10 + 30);
+		a->container = &asteroidPool;
+		a->enable = false;
+		a->playerScore = &score;
+		asteroidPool.push_back(a);
+		objectPool.push_back(a);
+	}
 
 }
 
@@ -179,27 +206,22 @@ void Start() {
 }
 
 void LoadLevel(int index) {
-	for (int i = 0; i < 10; ++i) {
-		Asteroid* a = new Asteroid();
-		a->SetTexture(asteroidTex);
-		a->SetPosition(sf::Vector2f(rand() % 1366, (rand() % 768)));
-		a->SetDirection(rand() % 10, rand() % 10);
-		a->speed = rand() % 20 + 50;
-		a->boundary = winSize;
-		a->rotateSpeed = (rand() % 10 + 30);
-		asteroidPool.push_back(a);
+	for (int i = 0; i < 3 + index; ++i) {
+		asteroidPool[i]->SetLife(3);
+		asteroidPool[i]->enable = true;
 	}
 }
 
 void SpawnPlayer() {
-	player.SetPosition(winSize / 2.f);
+	player->SetPosition(winSize / 2.f);
 }
 
 int main() {
-
+	int currentLevel = 0;
 	state = GameState::STATE_MENU;
 	
 	if (!LoadResources()) { return EXIT_FAILURE; }
+	//window.setFramerateLimit(60);
 
 	Init();
 
@@ -221,9 +243,6 @@ int main() {
 						if (Confirm(L"Quit Game?")) {
 							Return2Menu();
 						}
-						else {
-
-						}
 						pause = false;
 					}
 				} break;
@@ -244,7 +263,6 @@ int main() {
 		switch (state) {
 		case GameState::STATE_MENU: {
 			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
 			for (auto button : menuBtnList) {
 				button->Update(mousePos);
 				window.draw(*button);
@@ -260,92 +278,94 @@ int main() {
 				loadLevel = false;
 			}
 			if (!loadLevel) {
-				LoadLevel(0);
+				LoadLevel(currentLevel);
+				++currentLevel;
+				levelText.setString("Level:" + std::to_string(currentLevel));
 				loadLevel = true;
 				respawn = true;
 
 			}
 
 			if (respawn) {
-				player.SetPosition(winSize / 2.f);
-				player.enable = true;
+				player->SetPosition(winSize / 2.f);
+				player->Enable();
 				respawn = false;
+			}
+
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 3; j++) {
+					bucket[i][j].clear();
+				}
 			}
 
 			/*Update*/
 			if (!pause) {
-				player.Update(deltaTime);
-				for (auto asteroid : asteroidPool) {
-					asteroid->Update(deltaTime);
-				}
 
-				for (auto bullet : bulletPool) {
+				sf::Vector2f bucketCellSize((winSize.x + 120) / 4.f, (winSize.y  + 120) / 3.f);
+				//Update object then put them in bucket
+				for (const auto& object : objectPool) {
+					if (object->enable) {
+						object->Update(deltaTime);
 
-					sf::Vector2f position = bullet->position;
-					if (position.x < 0 || position.x > winSize.x || position.y <0 || position.y > winSize.y) {
-						bullet->enable = false;
-					}
-					if (!bullet->enable) { continue; }
-					bullet->Update(deltaTime);
-				}
-				/*Collision Detection*/
-				for (int i = 0; i < asteroidPool.size(); ++i) {
-					if (!asteroidPool[i]->enable) { continue; }
-					//Collide with other asteroid
-					for (int j = i + 1; j < asteroidPool.size(); ++j) {
-						sf::Vector2f diff = asteroidPool[i]->position - asteroidPool[j]->position;
-						float r2 = pow((asteroidPool[i]->radius + asteroidPool[j]->radius), 2);
-						if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
-							asteroidPool[i]->Collide(*asteroidPool[j]);
-							asteroidPool[j]->Collide(*asteroidPool[i]);
+						int xIndex = object->position.x / bucketCellSize.x;
+						int yIndex = object->position.y / bucketCellSize.y;
+
+						bucket[xIndex][yIndex].push_back(object);
+						if (object->position.x - object->radius - xIndex * bucketCellSize.x < 0) {
+							if (xIndex > 0)
+								bucket[xIndex - 1][yIndex].push_back(object);
 						}
-					}
-					//Collide with bullet
-					for (auto bullet : bulletPool) {
-						if (bullet->enable) {
-							sf::Vector2f diff = asteroidPool[i]->position - bullet->position;
-							float r2 = pow((asteroidPool[i]->radius + bullet->radius), 2);
-							if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
-								asteroidPool[i]->enable = false;
-
-								//asteroidPool[i]->Collide(*bullet);
-								bullet->Collide(*asteroidPool[i]);
+						if (object->position.x + object->radius - (xIndex + 1) * bucketCellSize.x > 0) {
+							if (xIndex < 4) {
+								bucket[xIndex + 1][yIndex].push_back(object);
+							}
+						}
+						if (object->position.y - object->radius - yIndex * bucketCellSize.y < 0) {
+							if (yIndex > 0) {
+								bucket[xIndex][yIndex - 1].push_back(object);
+							}
+						}
+						if (object->position.y + object->radius - (yIndex + 1) * bucketCellSize.y > 0) {
+							if (yIndex < 3) {
+								bucket[xIndex][yIndex + 1].push_back(object);
 							}
 						}
 					}
+				}
 
-					sf::Vector2f diff = asteroidPool[i]->position - player.position;
-					float r2 = pow((asteroidPool[i]->radius + player.radius), 2);
-					if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
-						asteroidPool[i]->Collide(player);
-						//player.Collide(*asteroidPool[i]);
+				/*Bucket Grid*/
+				for (int i = 0; i < 4; ++i) {
+					for (int j = 0; j < 3; ++j) {
+						for (int a = 0; a < bucket[i][j].size(); ++a) {
+							for (int b = a + 1; b < bucket[i][j].size(); ++b) {
+								sf::Vector2f diff = bucket[i][j][a]->position - bucket[i][j][b]->position;
+								float r2 = pow((bucket[i][j][a]->radius + bucket[i][j][b]->radius), 2);
+								if (pow(diff.x, 2) + pow(diff.y, 2) <= r2) {
+									bucket[i][j][a]->Collide(*bucket[i][j][b]);
+									bucket[i][j][b]->Collide(*bucket[i][j][a]);
+								}
+							}
+						}
 					}
-
-
 				}
 
-				if (player.enable == false) {
-					//healthBar.DecreaseHealth();
-					//respawn = true;
-				}
 			}
 
+			if (player->enable == false) {
+				healthBar.DecreaseHealth();
+				respawn = true;
+			}
 			
 
 			/*Render*/
-
-			for (auto asteroid : asteroidPool) {
-				if(asteroid->enable)
-					window.draw(*asteroid);
+			for (const auto& object : objectPool) {
+				if (object->enable) {
+					window.draw(*object);
+				}
 			}
-			for (auto bullet : bulletPool) {
-				if (bullet->enable)
-					window.draw(*bullet);
-			}
-			window.draw(player);
 
 			window.draw(healthBar);
-
+			window.draw(levelText);
 			ingameScore.setString(std::to_string(score));
 			window.draw(ingameScore);
 
@@ -353,6 +373,13 @@ int main() {
 			if (healthBar.isEmpty()) {
 				state = GameState::STATE_OVER;
 			}
+			loadLevel = false;
+			for (auto asteroid : asteroidPool) {
+				if (asteroid->enable) {
+					loadLevel = true;
+				}
+			}
+			
 		} break;
 		case GameState::STATE_OVER: {
 

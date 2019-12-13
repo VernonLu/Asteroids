@@ -9,7 +9,18 @@
 
 
 class Aircraft : public GameObject {
+private:
+	float invincibleTimeLeft = 3.1f;
+
+	float flashTimer = 0;
+
+	bool showSprite = true;
 public:
+
+	float invincibleTime = 3.1f;
+
+	float flashDuration = 0.1f;
+
 	float headingAngle;
 
 	float force;
@@ -63,6 +74,8 @@ public:
 	sf::Vector2f GetBoundary();
 
 	/* Member functions*/
+	void Enable();
+
 	void Accelerate(float dt);
 
 	void Move(float dt);

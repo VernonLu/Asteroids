@@ -4,7 +4,7 @@ Bullet::Bullet() {
 	tag = TYPE::Bullet;
 	enable = false;
 	headingAngle = 0;
-	speed = 500;
+	speed = 300;
 	radius = 10;
 	sprite.setPosition(-10, -10);
 }
@@ -48,6 +48,7 @@ void Bullet::Disable() {
 }
 
 void Bullet::Update(float dt) {
+	if (!enable) { return; }
 	Move(dt);
 	if (position.x < -radius * 2 ||
 		position.x > boundary.x + radius * 2 ||
@@ -62,6 +63,7 @@ void Bullet::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 void Bullet::Collide(GameObject& other) {
+	if (other.tag != TYPE::Asteroid) { return; }
 	enable = false;
 }
 

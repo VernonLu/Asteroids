@@ -12,7 +12,7 @@ Aircraft::Aircraft() {
 	tag = TYPE::Aircraft;
 	enable = true;
 	SetRadius(30);
-	SetForce(300);
+	SetForce(100);
 	SetHeading(270);
 	SetRotateSpeed(240);
 	velocity = sf::Vector2f(0, 0);
@@ -34,6 +34,7 @@ Aircraft::~Aircraft() {}
 
 void Aircraft::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	if (!enable) { return; }
+	if (!showSprite) { return; }
 	target.draw(sprite);
 	for (auto particle : flame) {
 		if (particle->isDead) continue;
@@ -136,6 +137,12 @@ void Aircraft::Move(float dt) {
 	}
 }
 
+void Aircraft::Enable() {
+	enable = true;
+	invincibleTimeLeft = invincibleTime;
+	flashTimer = 0;
+}
+
 void Aircraft::Accelerate(float dt) {
 	sf::Vector2f front(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180));
 	sf::Vector2f left(cos((headingAngle + 90) * 3.14 / 180), sin((headingAngle + 90) * 3.14 / 180));
@@ -184,12 +191,24 @@ void Aircraft::Attack() {
 
 void Aircraft::Update(float dt) {
 
+	if (invincibleTimeLeft > 0) { 
+		invincibleTimeLeft -= dt; 
+		flashTimer += dt;
+		if (flashTimer > flashDuration) {
+			showSprite = !showSprite;
+			flashTimer = 0;
+		}
+	}
+	else {
+		showSprite = true;
+	}
+
 	Move(dt);
 
 	for (auto particle : flame) {
 		particle->Update(dt);
 	}
-
+	
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 		RotateLeft(dt);
@@ -215,6 +234,7 @@ void Aircraft::Update(float dt) {
 }
 
 void Aircraft::Collide(GameObject& other) {
+	if (invincibleTimeLeft > 0) { return; }
 	if (other.tag == TYPE::Asteroid) {
 		enable = false;
 	}

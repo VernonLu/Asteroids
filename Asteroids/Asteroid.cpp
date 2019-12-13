@@ -1,12 +1,17 @@
 #include "Asteroid.h"
 
-Asteroid::Asteroid() {
+Asteroid::Asteroid(int life) {
 	tag = TYPE::Asteroid;
-	radius = 30;
-	enable = true;
+	this->life = life;
+	radius = life * 5 + 15;
 }
 
 Asteroid::~Asteroid() {
+}
+
+void Asteroid::SetLife(int value) {
+	life = value;
+	SetRadius(radius = life * 5 + 15);
 }
 
 void Asteroid::SetPosition(sf::Vector2f position) {
@@ -53,6 +58,12 @@ void Asteroid::Rotate(float dt) {
 	sprite.rotate(rotateSpeed * dt);
 }
 
+void Asteroid::SetRadius(float value) {
+	radius = value;
+	sf::Vector2u texSize = sprite.getTexture()->getSize();
+	sprite.setScale(radius / texSize.x * 2, radius / texSize.y * 2);
+}
+
 void Asteroid::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(sprite);
 }
@@ -77,12 +88,27 @@ void Asteroid::Collide(GameObject& other) {
 }
 
 void Asteroid::Destroy() {
-	enable = false;
 
-	/*
-	for (int i = 0; i < 2; ++i) {
-		Asteroid* a = new Asteroid();
-		container->push_back(a);
+	--life;
+	++(*playerScore);
+	if (life > 0) {
+		radius = life * 5 + 15;
+		SetRadius(radius);
+		direction = sf::Vector2f(-direction.y, direction.x);
+		//Generate New Small
+		for (auto asteroid : (*container)) {
+			if (!asteroid->enable) {
+				asteroid->life = life;
+				asteroid->SetRadius(radius);
+				asteroid->direction = -direction;
+				asteroid->SetPosition(-direction * radius + position); 
+				asteroid->enable = true;
+				break;
+			}
+		}
+		SetPosition(direction * radius + position);
 	}
-	*/
+	else {
+		enable = false;
+	}
 }

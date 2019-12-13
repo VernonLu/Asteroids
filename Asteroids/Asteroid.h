@@ -12,8 +12,12 @@ public:
 
 	std::vector<Asteroid*>* container;
 
-	Asteroid();
+	int* playerScore;
+
+	Asteroid(int life = 3);
 	~Asteroid();
+
+	void SetLife(int value);
 
 	void SetPosition(sf::Vector2f position);
 
@@ -22,6 +26,8 @@ public:
 	void Move(float dt);
 
 	void Rotate(float dt);
+
+	void SetRadius(float value);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
