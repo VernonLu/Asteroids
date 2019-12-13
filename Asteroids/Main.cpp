@@ -50,6 +50,9 @@ sf::SoundBuffer bgmBuffer;
 sf::Sound bgm(bgmBuffer);
 
 sf::SoundBuffer thrustBuffer;
+sf::SoundBuffer asteroidBuffer;
+sf::SoundBuffer bulletBuffer;
+sf::SoundBuffer playerExplosionBuffer;
 
 /*UI*/
 //Font
@@ -95,6 +98,9 @@ bool LoadResources() {
 	//Load sound
 	if (!bgmBuffer.loadFromFile("resources/Audio/music_background.wav")) { return false; }
 	if (!thrustBuffer.loadFromFile("resources/Audio/thrust1.wav")) { return false; }
+	if (!asteroidBuffer.loadFromFile("resources/Audio/explosion_asteroid.wav")) { return false; }
+	if (!bulletBuffer.loadFromFile("resources/Audio/weapon_player.wav")) { return false; }
+	if (!playerExplosionBuffer.loadFromFile("resources/Audio/explosion_player.wav")) { return false; }
 
 	return true;
 }
@@ -181,6 +187,8 @@ void Init() {
 	player->SetTexture(aircraftTex);
 	player->SetThrustSound(thrustBuffer);
 	player->SetBulletPool(&bulletPool);
+	player->SetBulletSound(bulletBuffer);
+	player->SetExplosionSound(playerExplosionBuffer);
 	objectPool.push_back(player);
 
 	for (int i = 0; i < 100; i++) {
@@ -194,6 +202,7 @@ void Init() {
 		a->container = &asteroidPool;
 		a->enable = false;
 		a->playerScore = &score;
+		a->SetBuffer(asteroidBuffer);
 		asteroidPool.push_back(a);
 		objectPool.push_back(a);
 	}
@@ -247,7 +256,7 @@ int main() {
 					}
 				} break;
 				case GameState::STATE_OVER: {
-
+					//Return2Menu();
 				} break;
 				default: break;
 				}
@@ -255,7 +264,7 @@ int main() {
 		}
 
 		float deltaTime = clock.restart().asSeconds();
-		//debug.setString(std::to_string((int)(1 / deltaTime))); 
+		debug.setString(std::to_string((int)(1 / deltaTime))); 
 
 		window.clear();
 

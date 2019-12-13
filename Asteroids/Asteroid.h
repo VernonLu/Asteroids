@@ -14,6 +14,8 @@ public:
 
 	int* playerScore;
 
+	sf::Sound sound;
+
 	Asteroid(int life = 3);
 	~Asteroid();
 
@@ -22,6 +24,8 @@ public:
 	void SetPosition(sf::Vector2f position);
 
 	void SetDirection(float x, float y);
+
+	void SetBuffer(sf::SoundBuffer& buffer);
 
 	void Move(float dt);
 

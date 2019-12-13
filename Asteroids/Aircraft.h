@@ -1,9 +1,5 @@
 #pragma once
 #include "GameObject.h"
-
-#include <SFML/Audio.hpp>
-#include <vector>
-
 #include "Bullet.h"
 #include "Particle.h"
 
@@ -30,6 +26,10 @@ public:
 	float rotateSpeed;
 
 	sf::Sound thrustSound;
+
+	sf::Sound bulletSound;
+
+	sf::Sound explosionSound;
 
 	std::vector<Bullet*>* bulletPool;
 
@@ -66,6 +66,8 @@ public:
 	float GetRotateSpeed();
 
 	void SetThrustSound(sf::SoundBuffer& sound);
+	void SetBulletSound(sf::SoundBuffer& sound);
+	void SetExplosionSound(sf::SoundBuffer& sound);
 
 	void SetBulletPool(std::vector<Bullet*>* bulletPool);
 

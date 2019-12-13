@@ -28,6 +28,10 @@ void Asteroid::SetDirection(float x, float y) {
 	direction = sf::Vector2f(x / len, y / len);
 }
 
+void Asteroid::SetBuffer(sf::SoundBuffer& buffer) {
+	sound.setBuffer(buffer);
+}
+
 void Asteroid::Move(float dt) {
 	
 	sf::Vector2f velocity = direction * speed * dt;
@@ -88,7 +92,7 @@ void Asteroid::Collide(GameObject& other) {
 }
 
 void Asteroid::Destroy() {
-
+	sound.play();
 	--life;
 	++(*playerScore);
 	if (life > 0) {

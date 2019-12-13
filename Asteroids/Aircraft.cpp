@@ -97,6 +97,14 @@ void Aircraft::SetThrustSound(sf::SoundBuffer& sound) {
 	thrustSound.setBuffer(sound);
 }
 
+void Aircraft::SetBulletSound(sf::SoundBuffer& sound) {
+	bulletSound.setBuffer(sound);
+}
+
+void Aircraft::SetExplosionSound(sf::SoundBuffer& sound) {
+	explosionSound.setBuffer(sound);
+}
+
 void Aircraft::SetBulletPool(std::vector<Bullet*>* bulletPool) {
 	this->bulletPool = bulletPool;
 }
@@ -181,6 +189,7 @@ void Aircraft::Attack() {
 
 	for (auto bullet : (*bulletPool)) {
 		if (bullet->enable) { continue; }
+		bulletSound.play();
 		bullet->SetHeading(headingAngle);
 		bullet->SetPosition(sf::Vector2f(cos(headingAngle * 3.14 / 180), sin(headingAngle * 3.14 / 180)) * 20.f + position);
 		bullet->enable = true;
@@ -236,6 +245,7 @@ void Aircraft::Update(float dt) {
 void Aircraft::Collide(GameObject& other) {
 	if (invincibleTimeLeft > 0) { return; }
 	if (other.tag == TYPE::Asteroid) {
+		explosionSound.play();
 		enable = false;
 	}
 }
