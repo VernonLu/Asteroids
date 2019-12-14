@@ -78,7 +78,6 @@ void Asteroid::Update(float dt) {
 }
 
 void Asteroid::Collide(GameObject& other) {
-	sound.play();
 	for (auto effect : (*effectContainer)) {
 		if (!effect->enable) {
 			effect->SetPosition(position);
@@ -88,14 +87,17 @@ void Asteroid::Collide(GameObject& other) {
 	}
 	switch (other.tag) {
 	case TAG::Asteroid: {
+		sound.play();
 		sf::Vector2f force = position - other.position;
 		direction = (force + direction * speed) / (speed + radius);
 	} break;
 	case TAG::Aircraft: {
+		sound.play();
 		sf::Vector2f diff = position - other.position;
 		SetDirection(diff.x, diff.y);
 	} break;
 	case TAG::Bullet: {
+		sound.play();
 		Destroy();
 	} break;
 	default:

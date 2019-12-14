@@ -40,6 +40,11 @@ void ExplosionEffect::Update(float dt) {
 		float radius = timer * count++ * 10;
 		shape->setOrigin(radius , radius);
 		shape->setRadius(radius);
+		sf::Color newColor = sf::Color::White;
+
+		newColor.a *= radius / 300;
+
+		shape->setOutlineColor(newColor);
 	}
 }
 
