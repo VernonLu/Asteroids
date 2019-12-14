@@ -18,6 +18,7 @@
 #include "PowerUp.h"
 #include "Asteroid.h"
 #include "Score.h"
+#include "ExplosionEffect.h"
 
 
 /*Window*/
@@ -71,15 +72,15 @@ Button exitBtn;
 HealthBar healthBar(3);
 
 /*GameObjects*/
-
-
 Aircraft* player = new Aircraft();
 std::vector<Bullet*> bulletPool;
 std::vector<Asteroid*> asteroidPool;
 std::vector<PowerUp*> powerUpPool;
 std::vector<GameObject*> objectPool;
 std::vector<GameObject*> bucket[4][3];
-//std::vector<std::vector<std::vector<GameObject*>>> bucket;
+std::vector<ExplosionEffect*> effectPool;
+
+
 bool LoadResources() {
 	//Load font
 	if (!font.loadFromFile("resources/Font/sansation.ttf")) { return false; }
@@ -206,7 +207,7 @@ void Init() {
 	powerUpPool.push_back(healthUp);
 	objectPool.push_back(healthUp);
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 100; ++i) {
 		Asteroid* a = new Asteroid();
 		a->SetTexture(asteroidTex);
 		a->SetPosition(sf::Vector2f(rand() % 1366, (rand() % 768)));
@@ -219,8 +220,14 @@ void Init() {
 		a->enable = false;
 		a->playerScore = &score;
 		a->SetBuffer(asteroidBuffer);
+		a->effectContainer = &effectPool;
 		asteroidPool.push_back(a);
 		objectPool.push_back(a);
+	}
+
+	for (int i = 0; i < 10; ++i) {
+		ExplosionEffect* effect = new ExplosionEffect();
+		effectPool.push_back(effect);
 	}
 
 }
@@ -426,7 +433,14 @@ int main() {
 				healthBar.DecreaseHealth();
 				respawn = true;
 			}
-			
+
+			for (auto effect : effectPool) {
+				if (effect->enable) {
+					effect->Update(deltaTime);
+					window.draw(*effect);
+				}
+			}
+
 
 			/*Render*/
 			for (const auto& object : objectPool) {
@@ -453,7 +467,6 @@ int main() {
 			
 		} break;
 		case GameState::STATE_OVER: {
-
 			endGameScore.setString(std::to_string(score));
 			window.draw(endGameScore);
 		} break;

@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "PowerUp.h"
+#include "ExplosionEffect.h"
 #include <random>
 
 class Asteroid : public GameObject {
@@ -14,6 +15,7 @@ public:
 
 	std::vector<Asteroid*>* container;
 	std::vector<PowerUp*>* powerUpContainer;
+	std::vector<ExplosionEffect*>* effectContainer;
 
 	int* playerScore;
 

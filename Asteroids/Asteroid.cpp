@@ -78,6 +78,14 @@ void Asteroid::Update(float dt) {
 }
 
 void Asteroid::Collide(GameObject& other) {
+	sound.play();
+	for (auto effect : (*effectContainer)) {
+		if (!effect->enable) {
+			effect->SetPosition(position);
+			effect->Enable();
+			break;
+		}
+	}
 	switch (other.tag) {
 	case TAG::Asteroid: {
 		sf::Vector2f force = position - other.position;
@@ -96,7 +104,6 @@ void Asteroid::Collide(GameObject& other) {
 }
 
 void Asteroid::Destroy() {
-	sound.play();
 	--life;
 	++(*playerScore);
 	if (life > 0) {
